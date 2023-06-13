@@ -17,6 +17,9 @@
   },
   "dependencies": {
     "@formkit/icons": "^0.17.2",
-    "@formkit/themes": "^0.17.2"
+    "@formkit/themes": "^0.17.2",
+    "axios": "^1.4.0",
+    "d3": "^7.8.5",
+    "vis-timeline": "^7.7.2"
   }
 }

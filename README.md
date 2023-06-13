@@ -1,77 +1,36 @@
-# Nuxt 3 Minimal Starter
-
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
-
-## Setup
-
-Make sure to install the dependencies:
-
-```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 # LGBT Network // Innsbruck
 
 ## Stack
 
 - d3
-- leaflet
 - formkit
 - tailwind
-- a timeline lib
+- leaflet (and [themes](https://leaflet-extras.github.io/leaflet-providers/preview/))
+- a timeline lib ([vis-timeline](https://github.com/visjs/vis-timeline) and [its standalone build](https://visjs.github.io/vis-timeline/examples/timeline/standalone-build.html))
+- airtable sync with secured scope, limited to 100 calls
 
 ## Todo
 
-- Install tailwind
-- Install formkit
+- ~~Install tailwind~~
+- ~~Install formkit and theme~~
+- ~~setup vercel/github~~
+- ~~setup d3/api calls~~
+- ~~set up header and menus~~
+- ~~set up leaflet~~
+- ~~set up airtable sync~~
+- ~~set up map theme~~
+- ~~find timeline lib~~
+
+- viz 3 map meetings
+- set up map data
+- bypass airtable limit (100 records)
+
+- viz 1 sankey
+- viz 2 timeline
+
+- viz 4 map corresp
+- viz 5 directed
+
+## What I need
+
+- the access (to get the content, text, pictures)
