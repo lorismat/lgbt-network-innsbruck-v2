@@ -3,7 +3,7 @@
 
     <!-- IMAGE -->
     <div class="mx-auto">
-      <img class="my-2" src="images/tomb.png" alt="Oscar Wilde's tomb in Paris" />
+      <img class="my-2" src="/images/tomb.png" alt="Oscar Wilde's tomb in Paris" />
       <div class="text-gray-500 text-xs">
         Legend Lorem ipsum dolor sit amet, consectetur adipiscing elit.
       </div>
