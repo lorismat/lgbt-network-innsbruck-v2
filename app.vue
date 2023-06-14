@@ -39,4 +39,22 @@ useHead({
   ]
 })
 
+useHead({
+  script: [
+    {
+      src: '/libs/leaflet-marker-cluster/leaflet.markercluster.js'
+    }
+  ],
+  link: [
+    {
+      rel: 'stylesheet',
+      href: '/libs/leaflet-marker-cluster/MarkerCluster.css'
+    },
+    {
+      rel: 'stylesheet',
+      href: '/libs/leaflet-marker-cluster/MarkerCluster.Default.css'
+    },
+  ]
+})
+
 </script>
