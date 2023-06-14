@@ -1,23 +1,20 @@
 <template>
   <HeaderViz />
   <div class="py-12">
-    <div>
-      timeline
-    </div>
-
     <div id="timeline"></div>
-
   </div>
-  
-
 </template>
 
 <script setup>
 // using timeline standalone build 
 // https://visjs.github.io/vis-timeline/examples/timeline/standalone-build.html
 
+const forTimeline = useState('forTimeline')
+
 
 onMounted(() => {
+
+  console.log(forTimeline.value);
   const container = document.getElementById('timeline');
   const items = new vis.DataSet([
     { id: 1, content: "item 1", start: "2014-04-20" },
