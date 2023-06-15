@@ -9,6 +9,8 @@
 </template>
 
 <script setup>
+const isViz = useState('isViz', () => false);
+
 useHead({
   script: [
     {

@@ -19,13 +19,13 @@
 // using timeline standalone build 
 // https://visjs.github.io/vis-timeline/examples/timeline/
 
-const peopleDataset = useState('peopleDataset')
-const meetingsDataset = useState('meetingsDataset')
-const documentsDataset = useState('documentsDataset')
-const materialDataset = useState('materialDataset')
-
 const author = ref('Christopher Isherwood')
 const allAuthors = ref([''])
+
+const peopleDataset = useState('peopleDataset')
+const meetingsDatasetUnroll = useState('meetingsDatasetUnroll')
+const documentsDataset = useState('documentsDataset')
+const materialDataset = useState('materialDataset')
 
 const timelineDataset = ref([
   { id: 1, content: "item 1", start: "2014-04-20" },
@@ -40,7 +40,6 @@ const options = {}
 
 onMounted(() => {
   allAuthors.value = peopleDataset.value.filter(x => x['Date of birth'] != undefined).map(x => x.ID)
-  console.log(allAuthors.value.length)
 })
 
 watch(() => author.value, (newValue, oldValue) => {
@@ -62,7 +61,7 @@ watch(() => author.value, (newValue, oldValue) => {
     )
   }
 
-  const meetings = meetingsDataset.value.filter(x => x['authorUnified'] == vals.createdPerson)
+  const meetings = meetingsDatasetUnroll.value.filter(x => x['authorUnified'] == vals.createdPerson)
   for (let i = 0; i<meetings.length; i++) {
     if (meetings[i]['Start date'] != undefined) {
       itemsArray.push(

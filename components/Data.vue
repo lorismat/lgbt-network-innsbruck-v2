@@ -33,6 +33,8 @@ const mapMeetingsDataset = useState('mapMeetingsDataset', () => [])
 const peopleDataset = useState('peopleDataset', () => [])
 
 const meetingsDataset = useState('meetingsDataset', () => [])
+
+const meetingsDatasetUnroll = useState('meetingsDatasetUnroll', () => [])
 const documentsDataset = useState('documentsDataset', () => [])
 const materialDataset = useState('materialDataset', () => [])
 
@@ -102,17 +104,21 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
 
     // each table should have the same colums
     const meetings = dataMeetings.value.map(x => x.fields)
-    let tMeetings = aq.from(meetings).unroll('Participants')
+    let tMeetings = aq.from(meetings)
+    let tMeetingsUnroll = aq.from(meetings).unroll('Participants')
+
     const documents = dataDocuments.value.map(x => x.fields)
     let tDocuments = aq.from(documents).unroll('Author')
     const material = dataMaterial.value.map(x => x.fields)
     let tMaterial = aq.from(material).unroll('Agent')
 
     tMeetings = tMeetings.derive({ authorUnified: d => d['Participants'] })
+    tMeetingsUnroll = tMeetingsUnroll.derive({ authorUnified: d => d['Participants'] })
     tDocuments = tDocuments.derive({ authorUnified: d => d['Author'] })
     tMaterial = tMaterial.derive({ authorUnified: d => d['Agent'] })
 
     meetingsDataset.value = tMeetings.objects()
+    meetingsDatasetUnroll.value = tMeetingsUnroll.objects()
     documentsDataset.value = tDocuments.objects()
     materialDataset.value = tMaterial.objects()
 

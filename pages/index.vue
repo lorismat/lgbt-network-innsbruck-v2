@@ -3,21 +3,21 @@
 
     <!-- IMAGE -->
     <div class="mx-auto">
-      <img class="my-2" src="/images/tomb.png" alt="Oscar Wilde's tomb in Paris" />
-      <div class="text-gray-500 text-xs">
+      <img class="" src="/images/tomb.png" alt="Oscar Wilde's tomb in Paris" />
+      <div class="text-gray-500  text-xs">
         Legend Lorem ipsum dolor sit amet, consectetur adipiscing elit.
       </div>
     </div>
 
     <!-- INTRO -->
-    <div class="my-12">
-      <div class="py-2 text-2xl text-purple-800">
+    <div class="my-24">
+      <div class="py-2 text-5xl max-w-2xl  text-center mx-auto text-gray-800">
         Networks of Anglophone LGBTQ Exile Writers
       </div>
-      <div class="py-2 text-lg text-blue-800">
+      <div class="py-2 text-lg text-center  text-gray-500">
         From 1900 to 1969
       </div>
-      <div class="text-sm max-w-3xl">
+      <div class="text-sm max-w-3xl text-center  mx-auto">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi.
       </div>
     </div>
@@ -40,6 +40,11 @@
 </template>
 
 <script setup>
+
+const isViz = useState('isViz')
+onMounted(() => {
+  isViz.value = false;
+})
 
 const cards = [
   {

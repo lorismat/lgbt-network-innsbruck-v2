@@ -7,4 +7,12 @@ module.exports = {
     './node_modules/@formkit/themes/dist/tailwindcss/genesis/index.cjs',
   ],
   plugins: [FormKitVariants],
+  theme: {
+    extend:
+    {
+      fontFamily: {
+        'playfair': ['Playfair Display', 'sans-serif']
+      },
+    },
+  },
 }

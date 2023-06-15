@@ -6,4 +6,9 @@
 
 <script setup>
 
+const isViz = useState('isViz')
+onMounted(() => {
+  isViz.value = false;
+})
+
 </script>
