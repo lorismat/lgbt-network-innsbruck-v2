@@ -29,8 +29,13 @@ const dataMaterial = useState('dataMaterial', () => []); const triggerMaterial =
 const dataPeople = useState('dataPeople', () => []); const triggerPeople = ref(0);
 
 // build-up datasets
-const forMapMeetings = useState('forMapMeetings', () => [])
-const forTimeline = useState('forTimeline', () => [])
+const mapMeetingsDataset = useState('mapMeetingsDataset', () => [])
+const peopleDataset = useState('peopleDataset', () => [])
+
+const meetingsDataset = useState('meetingsDataset', () => [])
+const documentsDataset = useState('documentsDataset', () => [])
+const materialDataset = useState('materialDataset', () => [])
+
 
 // iterator to bypass Airtable limit to 100 entries
 function iterCalls(iterator, table, offset, data, trigger) {
@@ -55,7 +60,7 @@ onMounted(() => {
   iterCalls(iterator, atTablePeople, offsetPeople, dataPeople, triggerPeople)
 })
 
-// forMapMeetings
+// mapMeetingsDataset
 watch(() => [triggerLocations.value, triggerMeetings.value], () => {
   if (offsetLocations.value == undefined && offsetMeetings.value == undefined) {
     const locations = dataLocations.value.map(x => x.fields)
@@ -72,7 +77,7 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
     const tMeetings = aq.from(meetings)
 
     const tMeetingsComplete = tMeetings.join(tLocations, 'createdLoc')
-    forMapMeetings.value = tMeetingsComplete.groupby('createdLoc').rollup({
+    mapMeetingsDataset.value = tMeetingsComplete.groupby('createdLoc').rollup({
       city: aq.op.max('Name'),
       notes: aq.op.array_agg('Summary'),
       count: aq.op.count(),
@@ -93,11 +98,33 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
       person['createdPerson'] = dataPeople.value[i].id
     })
     const tPeople = aq.from(people)
+    peopleDataset.value = tPeople.objects()
 
-    // create meetings table
+    // each table should have the same colums
     const meetings = dataMeetings.value.map(x => x.fields)
-    const tMeetings = aq.from(meetings)
-    console.log(tMeetings.unroll('Participants'))
+    let tMeetings = aq.from(meetings).unroll('Participants')
+    const documents = dataDocuments.value.map(x => x.fields)
+    let tDocuments = aq.from(documents).unroll('Author')
+    const material = dataMaterial.value.map(x => x.fields)
+    let tMaterial = aq.from(material).unroll('Agent')
+
+    tMeetings = tMeetings.derive({ authorUnified: d => d['Participants'] })
+    tDocuments = tDocuments.derive({ authorUnified: d => d['Author'] })
+    tMaterial = tMaterial.derive({ authorUnified: d => d['Agent'] })
+
+    meetingsDataset.value = tMeetings.objects()
+    documentsDataset.value = tDocuments.objects()
+    materialDataset.value = tMaterial.objects()
+
+
+    // create array with all columns
+    /*
+    const allColumns = tMeetings._names.concat(tDocuments._names, tMaterial._names)
+    console.log(allColumns)
+    const tAggregate = tMeetings.concat([tDocuments, tMaterial]);
+    console.log(tAggregate)
+    */
+    
   }
 })
 

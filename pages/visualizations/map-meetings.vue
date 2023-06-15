@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-const forMapMeetings = useState('forMapMeetings')
+const mapMeetingsDataset = useState('mapMeetingsDataset')
 let map;
 
 onMounted(() => {
@@ -19,8 +19,8 @@ onMounted(() => {
 
   const markers = L.markerClusterGroup();
 
-  for (let i = 0; i<forMapMeetings.value.length; i++) {
-    const location = forMapMeetings.value[i];
+  for (let i = 0; i<mapMeetingsDataset.value.length; i++) {
+    const location = mapMeetingsDataset.value[i];
     if (location.lat != undefined && location.lon != undefined) {
       let notes = ''
       for (let j = 0; j<location.notes.length; j++) {
