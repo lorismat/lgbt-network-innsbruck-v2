@@ -1,5 +1,10 @@
 <template>
   <HeaderViz />
+  <BaseContent 
+    title="Timeline of Author Meetings and Material Exchanges"
+    part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
+    part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
+  />
   <div class="py-12">
     <FormKit
       v-model="author"
@@ -12,6 +17,10 @@
       {{ author }}
     </div>
     <div id="timeline"></div>
+
+    <div class="p-48">
+
+    </div>
   </div>
 </template>
 

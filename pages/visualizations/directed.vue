@@ -1,6 +1,18 @@
 <template>
   <HeaderViz />
-  <div class="p-8 bg-gray-100 my-8">
+  <BaseContent 
+    title="Force-Directed Graph of Author Meetings and Material Exchanges"
+    part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
+    part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
+  />
+
+  <div class="py-12">
+    WORK IN PROGRESS
+  </div>
+
+  <!-- 
+
+    <div class="p-8 bg-gray-100 my-8">
     <FormKit
       v-model="author"
       type="select"
@@ -20,6 +32,11 @@
     <div class="py-12">
       {{ another }}
     </div>
+  </div>
+  -->
+  
+  <div class="py-48">
+
   </div>
 </template>
 

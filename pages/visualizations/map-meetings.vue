@@ -1,5 +1,10 @@
 <template>
   <HeaderViz />
+  <BaseContent 
+    title="Map of Author Meetings"
+    part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
+    part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
+  />
   <div class="py-12">
     <div id="map"></div>
   </div>
@@ -10,10 +15,10 @@ const mapMeetingsDataset = useState('mapMeetingsDataset')
 let map;
 
 onMounted(() => {
-  map = L.map('map').setView([51.505, -0.09], 4);
+  map = L.map('map').setView([51.505, -0.09], 2);
   L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
     maxZoom: 10,
-    minZoom: 3,
+    minZoom: 2,
     attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
   }).addTo(map);
 
