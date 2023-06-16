@@ -24,13 +24,14 @@
         </div>
       </div>
 
-      <div class="inline-flex items-baseline justify-between">
+      <div class="inline-flex items-baseline justify-between w-full">
 
         <div>
           {{ authorInfo.occupation.join(', ') }}
         </div>
+
         <div class="text-sm font-bold">
-          {{ authorInfo.orientation }}
+         {{ authorInfo.orientation }}
         </div>
 
       </div>
