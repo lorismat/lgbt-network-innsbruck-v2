@@ -5,7 +5,7 @@
 - d3
 - formkit
 - tailwind
-- leaflet (and [themes](https://leaflet-extras.github.io/leaflet-providers/preview/))
+- leaflet (and [themes](https://leaflet-extras.github.io/leaflet-providers/preview/)) and [clusters lib - marker clusters]()
 - a timeline lib ([vis-timeline](https://github.com/visjs/vis-timeline) and [its standalone build](https://visjs.github.io/vis-timeline/examples/timeline/standalone-build.html))
 - airtable sync with secured scope, limited to 100 calls
 - arquero 

@@ -22,7 +22,19 @@ onMounted(() => {
     attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
   }).addTo(map);
 
-  const markers = L.markerClusterGroup();
+  const markers = L.markerClusterGroup({
+    spiderLegPolylineOptions: { weight: 0 },
+    polygonOptions: {
+      fillColor: 'transparent',
+      color: '#3887be',
+      weight: 1.5,
+      opacity: 0,
+      fillOpacity: 0.2
+    },
+    iconCreateFunction: function(cluster) {
+      return L.divIcon({ html: `<b class='p-5 -mx-1 rounded-full border-2 border-black text-xs bg-gray-50'>` + cluster.getChildCount() + '</b>' });
+    }
+  });
 
   for (let i = 0; i<mapMeetingsDataset.value.length; i++) {
     const location = mapMeetingsDataset.value[i];

@@ -86,6 +86,8 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
       lat: aq.op.mean('Latitude'),
       lon: aq.op.mean('Longitude')
     }).objects();
+
+    console.log('map data ready')
   }
 })
 
