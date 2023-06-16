@@ -4,6 +4,49 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --beige: #D9D1B8;
+  --light-brown: #736355;
+  --dark-brown: #401F13;
+  
+}
+
 body {
   font-family: "Playfair Display", serif;
 }
+
+/*
+
+Color Theme Swatches in Hex
+
+.World-Newspapers-1-hex { color: #605A8C; }
+.World-Newspapers-2-hex { color: #353440; }
+.World-Newspapers-3-hex { color: #A39FBF; }
+.World-Newspapers-4-hex { color: #F0F0F2; }
+.World-Newspapers-5-hex { color: #BFBFAA; }
+
+*/
+
+/*
+
+Color Theme Swatches in Hex
+
+.Black-and-white-repeating-torn-newspaper-background.-Continuous-pattern-left,-right,-up-and-down-1-hex { color: #A6A498; }
+.Black-and-white-repeating-torn-newspaper-background.-Continuous-pattern-left,-right,-up-and-down-2-hex { color: #D9D8D7; }
+.Black-and-white-repeating-torn-newspaper-background.-Continuous-pattern-left,-right,-up-and-down-3-hex { color: #8C7B6C; }
+.Black-and-white-repeating-torn-newspaper-background.-Continuous-pattern-left,-right,-up-and-down-4-hex { color: #734A32; }
+.Black-and-white-repeating-torn-newspaper-background.-Continuous-pattern-left,-right,-up-and-down-5-hex { color: #591708; }
+
+*/
+
+/*
+
+Color Theme Swatches in Hex
+
+.One-torn-paper-piece-isolated-on-white-1-hex { color: #D9D7CC; }
+.One-torn-paper-piece-isolated-on-white-2-hex { color: #D9D1B8; }
+.One-torn-paper-piece-isolated-on-white-3-hex { color: #736355; }
+.One-torn-paper-piece-isolated-on-white-4-hex { color: #401F13; }
+.One-torn-paper-piece-isolated-on-white-5-hex { color: #F2F2F2; }
+
+*/

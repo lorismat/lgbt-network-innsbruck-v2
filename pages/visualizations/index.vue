@@ -1,7 +1,6 @@
 <template>
   <HeaderViz />
-  <div>
-    index viz
+  <div class="py-64">
   </div>
 </template>
 
