@@ -1,5 +1,8 @@
 <template>
   <HeaderViz />
+  <TimelineTooltip 
+    :description="popupDescription"
+  />
   <BaseContent 
     title="Timeline of Author Meetings and Material Exchanges"
     part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
@@ -14,34 +17,24 @@
       inner-class="ring-0 focus-within:ring-gray-500"
       :options="allAuthors"
     />
-    <div v-if="authorInfo != ''" class="p-2 mt-12  max-w-lg border border-l-4 border-gray-800">
-      <div class="inline-flex items-baseline justify-between w-full">
-        <div class="text-xl pr-2">
-          {{ authorInfo.name }}
-        </div>
-        <div class="text-gray-500">
-          {{ authorInfo.dob }} ― {{ authorInfo.dod }}
-        </div>
-      </div>
 
-      <div class="inline-flex items-baseline justify-between w-full">
+    <AuthorCard 
+      :authorInfo="authorInfo"
+    />
 
-        <div>
-          {{ authorInfo.occupation.join(', ') }}
-        </div>
+    <FormKit
+      v-model="selectedEvents"
+      type="checkbox"
+      label=" "
+      :options="['Meetings', 'Material Exchanges', 'Publications']"
+      help=" "
+      options-class="flex gap-8"
+      wrapper-class="!items-end"
+    />
+    <pre wrap>{{ selectedEvents }}</pre>
 
-        <div class="text-sm font-bold">
-         {{ authorInfo.orientation }}
-        </div>
-
-      </div>
-      
-    </div>
     <div class="border-gray-900 my-2" id="timeline"></div>
-
-    <div class="p-48">
-
-    </div>
+    <div class="p-48"></div>
   </div>
 </template>
 
@@ -49,9 +42,14 @@
 // using timeline standalone build 
 // https://visjs.github.io/vis-timeline/examples/timeline/
 
+const selectedEvents = ref(['Meetings', 'Material Exchanges', 'Publications'])
+
 const author = ref('')
 const authorInfo = ref('')
 const allAuthors = ref([''])
+
+const popupDescription = ref('')
+const popupTimelineVisible = useState('popupTimelineVisible', () => false)
 
 const peopleDataset = useState('peopleDataset')
 const meetingsDatasetUnroll = useState('meetingsDatasetUnroll')
@@ -76,8 +74,7 @@ watch(() => author.value, (newValue, oldValue) => {
   const container = document.getElementById('timeline')
   container.innerHTML = ''
   const vals = peopleDataset.value.filter(x =>  x.ID == author.value)[0]
-  console.log('author vals', vals);
-
+  
   authorInfo.value = {
     name: vals['ID'],
     dob: vals['Date of birth'],
@@ -104,7 +101,14 @@ watch(() => author.value, (newValue, oldValue) => {
   for (let i = 0; i<meetings.length; i++) {
     if (meetings[i]['Start date'] != undefined && meetings[i]['Summary'] != undefined) {
       itemsArray.push(
-        { id: 'meeting-' + i, content: meetings[i]['Summary'].slice(0,20) + '...', title: meetings[i]['Summary'].slice(0,50), start: meetings[i]['Start date'], className: 'metaClass beige' }
+        { 
+          id: 'meeting-' + i, 
+          content: meetings[i]['Summary'].slice(0,20) + '...', 
+          title: meetings[i]['Summary'].slice(0,50), 
+          start: meetings[i]['Start date'], 
+          className: 'metaClass beige',
+          description: meetings[i]['Summary'],  
+        }
       )
     }
   }
@@ -113,7 +117,14 @@ watch(() => author.value, (newValue, oldValue) => {
   for (let i = 0; i<documents.length; i++) {
     if (documents[i]['Year of publication (original)'] != undefined) {
       itemsArray.push(
-        { id: 'document-' + i, content: documents[i]['Title'].slice(0, 20), title: documents[i]['Title'].slice(0, 50), start: documents[i]['Year of publication (original)'], className: 'metaClass light-brown' }
+        { 
+          id: 'document-' + i, 
+          content: documents[i]['Title'].slice(0, 20), 
+          title: documents[i]['Title'].slice(0, 50), 
+          start: documents[i]['Year of publication (original)'], 
+          className: 'metaClass light-brown',
+          description: documents[i]['Title'],  
+        }
       )
     }
   }
@@ -122,7 +133,13 @@ watch(() => author.value, (newValue, oldValue) => {
   for (let i = 0; i<material.length; i++) {
     if (material[i]['Start date of activity'] != undefined) {
       itemsArray.push(
-        { id: 'material-' + i, content: material[i]['Type'].slice(0, 20), start: material[i]['Start date of activity'], className: 'metaClass dark-brown' }
+        { 
+          id: 'material-' + i, 
+          content: material[i]['Type'].slice(0, 20), 
+          start: material[i]['Start date of activity'], 
+          className: 'metaClass dark-brown',
+          description: material[i]['Type'],
+        }
       )
     }
   }
@@ -136,13 +153,20 @@ watch(() => author.value, (newValue, oldValue) => {
   const options = {
     template: function (item, element, data) {
       console.log('template', element, data)
-      const html = `<div id='${data.id}'>${item.content}</div>`
+      const html = `
+        <div 
+          id='${data.id}' 
+          data-description='${data.description}'
+        >
+          ${item.content}
+        </div>`
+
       return html;
     },
     xss: {
       disabled: false,
       filterOptions: {
-        whiteList: { div: ['class', 'id'] }
+        whiteList: { div: ['class', 'id', 'data-description'] }
       },
     },
     tooltip: {
@@ -161,8 +185,11 @@ watch(() => author.value, (newValue, oldValue) => {
   const timeline = new vis.Timeline(container, items, options)
 
   timeline.on("select", function (e) {
-    // get element by id
     const el = document.getElementById(e.items[0])  
+    console.log(el, e)
+    popupTimelineVisible.value = true;
+    popupDescription.value = el.dataset.description;
+
   });
 
   
