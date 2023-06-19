@@ -13,6 +13,11 @@ module.exports = {
       fontFamily: {
         'playfair': ['Playfair Display', 'sans-serif']
       },
+      colors: {
+        'beige': '#D9D1B8',
+        'light-brown': '#736355',
+        'dark-brown': '#401F13',
+      }
     },
   },
 }

@@ -1,24 +1,22 @@
 <template>
   <div>
 
-    <!-- IMAGE -->
-    <div class="mx-auto">
-      <img class="" src="/images/tomb.png" alt="Oscar Wilde's tomb in Paris" />
-      <div class="text-gray-500  text-xs">
-        Legend Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-      </div>
-    </div>
-
     <!-- INTRO -->
-    <div class="my-24">
-      <div class="py-2 text-5xl max-w-2xl  text-center mx-auto text-gray-800">
-        Networks of Anglophone LGBTQ Exile Writers
+    <div class="mb-24">
+      
+      <div class="pt-16">
+        <div class="py-2 text-5xl max-w-2xl text-center mx-auto text-gray-800">
+          Networks of Anglophone LGBTQ Exile Writers
+        </div>
+        <div class="py-2 text-lg text-center  text-gray-500">
+          From 1900 to 1969
+        </div>
       </div>
-      <div class="py-2 text-lg text-center  text-gray-500">
-        From 1900 to 1969
-      </div>
-      <div class="text-sm max-w-3xl text-center  mx-auto">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi.
+      
+      <BlockImage />
+
+      <div class="text-sm py-4 max-w-2xl text-center text-justify mx-auto">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi. Aliquam tristique mauris in magna commodo venenatis. Sed ac eros nulla. Mauris dui risus, accumsan eu lacinia a, malesuada id justo. Proin lacinia gravida varius. Integer sed velit commodo, suscipit velit a, laoreet tortor. Phasellus molestie, lacus ut convallis dignissim, mi metus gravida ante, eu porttitor felis purus placerat sapien. Cras vel felis at quam laoreet aliquet ac sed mauris. Cras posuere eget nisi sit amet consectetur. Sed aliquet pellentesque ante. Nullam ut hendrerit purus, ac finibus elit. Proin in orci ac tellus scelerisque commodo id ac eros. Nulla sit amet lacus ut velit bibendum facilisis vitae nec neque.
       </div>
     </div>
 

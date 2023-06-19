@@ -8,7 +8,7 @@
     part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
     part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
   />
-  <div class="pt-4 pb-12">
+  <div class="pt-8 pb-12">
     <FormKit
       v-model="author"
       type="select"
@@ -28,12 +28,37 @@
       label=" "
       :options="['Meetings', 'Material Exchanges', 'Publications']"
       help=" "
+      outer-class="mt-12 !mb-0"
+      fieldset-class="border-0"
       options-class="flex gap-8"
-      wrapper-class="!items-end"
+      wrapper-class="!items-end border-0"
+      decorator-class="text-gray-500 peer-checked:ring-gray-500 peer-checked:text-gray-500"
     />
-    <pre wrap>{{ selectedEvents }}</pre>
 
-    <div class="border-gray-900 my-2" id="timeline"></div>
+    <div class="border-2 border-gray-800 rounded-md border-dotted">
+      <div class="p-2 flex justify-end gap-4">
+        <div class="flex items-end">
+          <svg class="w-4 h-4 inline-block">
+            <circle cx="6" cy="6" r="6" fill="var(--beige)" />
+          </svg>
+          <span class="text-beige text-sm font-bold">Meetings</span>
+        </div>
+        <div>
+          <svg class="w-4 h-4 inline-block">
+            <circle cx="6" cy="6" r="6" fill="var(--dark-brown)" />
+          </svg>
+          <span class="text-dark-brown text-sm font-bold">Material Exchanges</span>
+        </div>
+        <div>
+          <svg class="w-4 h-4 inline-block">
+            <circle cx="6" cy="6" r="6" fill="var(--light-brown)" />
+          </svg>
+          <span class="text-light-brown text-sm font-bold">Publications</span>
+        </div>
+      </div>
+      <div class="my-2" id="timeline"></div>
+    </div>
+    
     <div class="p-48"></div>
   </div>
 </template>
@@ -44,7 +69,7 @@
 
 const selectedEvents = ref(['Meetings', 'Material Exchanges', 'Publications'])
 
-const author = ref('')
+const author = useState('author')
 const authorInfo = ref('')
 const allAuthors = ref([''])
 
@@ -68,9 +93,11 @@ const timelineDataset = ref([
 
 onMounted(() => {
   allAuthors.value = peopleDataset.value.filter(x => x['Date of birth'] != undefined && x['Date of death'] != undefined).map(x => x.ID)
+  allAuthors.value.push('')
 })
 
-watch(() => author.value, (newValue, oldValue) => {
+watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
+
   const container = document.getElementById('timeline')
   container.innerHTML = ''
   const vals = peopleDataset.value.filter(x =>  x.ID == author.value)[0]
@@ -99,7 +126,7 @@ watch(() => author.value, (newValue, oldValue) => {
 
   const meetings = meetingsDatasetUnroll.value.filter(x => x['authorUnified'] == vals.createdPerson)
   for (let i = 0; i<meetings.length; i++) {
-    if (meetings[i]['Start date'] != undefined && meetings[i]['Summary'] != undefined) {
+    if (meetings[i]['Start date'] != undefined && meetings[i]['Summary'] != undefined && selectedEvents.value.includes('Meetings')) {
       itemsArray.push(
         { 
           id: 'meeting-' + i, 
@@ -115,7 +142,7 @@ watch(() => author.value, (newValue, oldValue) => {
 
   const documents = documentsDataset.value.filter(x => x['authorUnified'] == vals.createdPerson)
   for (let i = 0; i<documents.length; i++) {
-    if (documents[i]['Year of publication (original)'] != undefined) {
+    if (documents[i]['Year of publication (original)'] != undefined && selectedEvents.value.includes('Publications')) {
       itemsArray.push(
         { 
           id: 'document-' + i, 
@@ -131,7 +158,7 @@ watch(() => author.value, (newValue, oldValue) => {
 
   const material = materialDataset.value.filter(x => x['authorUnified'] == vals.createdPerson)
   for (let i = 0; i<material.length; i++) {
-    if (material[i]['Start date of activity'] != undefined) {
+    if (material[i]['Start date of activity'] != undefined && selectedEvents.value.includes('Material Exchanges')) {
       itemsArray.push(
         { 
           id: 'material-' + i, 
@@ -152,7 +179,6 @@ watch(() => author.value, (newValue, oldValue) => {
 
   const options = {
     template: function (item, element, data) {
-      console.log('template', element, data)
       const html = `
         <div 
           id='${data.id}' 
@@ -174,11 +200,8 @@ watch(() => author.value, (newValue, oldValue) => {
       overflowMethod: 'cap'
     },
     maxHeight: '600px',
-    //height: '600px',
-    min: lowerBound, // lower limit of visible range
-    max: upperBound, // upper limit of visible range
-    // zoomMin: 1000 * 60 * 60 * 24, // one day in milliseconds
-    // zoomMax: 1000 * 60 * 60 * 24 , // about three months in milliseconds
+    min: lowerBound,
+    max: upperBound,
   };
 
   const items = new vis.DataSet(itemsArray)  
@@ -186,19 +209,14 @@ watch(() => author.value, (newValue, oldValue) => {
 
   timeline.on("select", function (e) {
     const el = document.getElementById(e.items[0])  
-    console.log(el, e)
-    popupTimelineVisible.value = true;
-    popupDescription.value = el.dataset.description;
-
+    if (el.id != 'dob' && el.id != 'dod') {
+      popupDescription.value = el.dataset.description
+      popupTimelineVisible.value = true
+    }
   });
 
   
 })
-
-function visItemOnClick() {
-  console.log('clicked')
-}
-
 
 </script>
 
@@ -250,7 +268,8 @@ function visItemOnClick() {
 }
 
 .vis-timeline {
-  border: 2px solid #444;
+  margin: 10px 20px;
+  border: 0px solid #444;
   border-style: dotted;
   border-radius: 4px;
 }
