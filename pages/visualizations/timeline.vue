@@ -9,6 +9,7 @@
     part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
   />
   <div class="pt-8 pb-12">
+    <div class="text-red-600 capitalize py-4">data inside the pop is not yet aggregated</div>
     <FormKit
       v-model="author"
       type="select"

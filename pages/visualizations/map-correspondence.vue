@@ -6,6 +6,7 @@
     part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
   />
   <div class="pb-12 pt-6">
+    <div class="text-red-600 capitalize py-4">not finished</div>
     <FormKit
       v-model="letterType"
       type="radio"
@@ -161,7 +162,7 @@ onMounted(() => {
       });
     }
   });
-  generateMarker(mapCorrespondenceDatasetIn.value, L, map)
+  generateMarker(mapCorrespondenceDatasetIn.value, L, map, 'from')
 })
 
 watch(() => letterType.value, (newValue, oldValue) => {
