@@ -23,7 +23,8 @@ const dataPeople = useState('dataPeople', () => []); const triggerPeople = ref(0
 
 // build-up datasets
 const mapMeetingsDataset = useState('mapMeetingsDataset', () => [])
-const mapCorrespondenceDataset = useState('mapCorrespondenceDataset', () => [])
+const mapCorrespondenceDatasetIn = useState('mapCorrespondenceDatasetIn', () => [])
+const mapCorrespondenceDatasetOut = useState('mapCorrespondenceDatasetOut', () => [])
 const peopleDataset = useState('peopleDataset', () => [])
 
 const meetingsDataset = useState('meetingsDataset', () => [])
@@ -31,10 +32,6 @@ const meetingsDataset = useState('meetingsDataset', () => [])
 const meetingsDatasetUnroll = useState('meetingsDatasetUnroll', () => [])
 const documentsDataset = useState('documentsDataset', () => [])
 const materialDataset = useState('materialDataset', () => [])
-
-const lettersDataset = useState('lettersDataset', () => [])
-
-
 
 // iterator to bypass Airtable limit to 100 entries
 function iterCalls(iterator, table, offset, data, trigger) {
@@ -91,39 +88,63 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
   }
 })
 
-// mapCorrespondenceDataset
-watch(() => [triggerLocations.value, triggerMaterial.value], () => {
+// mapCorrespondenceDataset In/Out
+watch(() => [triggerMaterial.value], () => {
 
   if (offsetLocations.value == undefined && offsetMaterial.value == undefined) {
-
     const locations = dataLocations.value.map(x => x.fields)
     locations.forEach((location, i) => {
-      location['createdLoc'] = dataLocations.value[i].id
+      location['createdLocIn'] = dataLocations.value[i].id
+      location['createdLocOut'] = dataLocations.value[i].id
     })
+    
 
-    /*
-    const meetings = dataMeetings.value.map(x => x.fields)
-    meetings.forEach((meeting, index) => {
-      if (meeting['Location'] != undefined) {
-        meeting['createdLoc'] = meeting['Location'][0]
+    let materials = dataMaterial.value.sort((a, b) => {
+      if (a.fields['Location written (if letter)'] == undefined || a.fields['Location received (if individual letter)'] == undefined ||  a.fields['Summary'] == undefined) {
+        return 1;
+      } else {
+        return 0
+      };
+    }).map(x => x.fields)
+    materials.forEach((material, index) => {
+      if (material['Location written (if letter)'] != undefined) {
+        material['createdLocIn'] = material['Location written (if letter)'][0]
+      }
+      if (material['Location received (if individual letter)'] != undefined) {
+        material['createdLocOut'] = material['Location received (if individual letter)'][0]
       }
     })
-    const tLocations = aq.from(locations)
-    const tMeetings = aq.from(meetings)
 
-    const tCorrespondenceComplete = tMeetings.join(tLocations, 'createdLoc')
-    mapCorrespondenceDataset.value = tCorrespondenceComplete.groupby('createdLoc').rollup({
+    materials = materials.filter(d => d['Type'] == 'Letter')
+    const tLocations = aq.from(locations)
+    const tMaterial = aq.from(materials)
+
+    const tCorrespondenceCompleteIn = tMaterial.join(tLocations, 'createdLocIn')
+    const tCorrespondenceCompleteOut = tMaterial.join(tLocations, 'createdLocOut')
+
+
+    mapCorrespondenceDatasetIn.value = tCorrespondenceCompleteIn.groupby('createdLocIn').rollup({
       city: aq.op.max('Name'),
-      source: aq.op.max('Document (evidence of meeting)'),
-      participants: aq.op.max('ID (from Participants)'),
-      dateStart: aq.op.array_agg('Start date'),
+      source: aq.op.max('Document'),
+      agent: aq.op.max('Agent'),
+      dateStart: aq.op.array_agg('Start date of activity'),
       notes: aq.op.array_agg('Summary'),
       count: aq.op.count(),
       lat: aq.op.mean('Latitude'),
       lon: aq.op.mean('Longitude')
     }).objects();
 
-    */
+    mapCorrespondenceDatasetOut.value = tCorrespondenceCompleteOut.groupby('createdLocOut').rollup({
+      city: aq.op.max('Name'),
+      source: aq.op.max('Document'),
+      agent: aq.op.max('Agent'),
+      dateStart: aq.op.array_agg('Start date of activity'),
+      notes: aq.op.array_agg('Summary'),
+      count: aq.op.count(),
+      lat: aq.op.mean('Latitude'),
+      lon: aq.op.mean('Longitude')
+    }).objects();
+    
   }
 
   // lettersDataset.value = tMaterial.objects().filter(x => x.Type == 'Letter')
