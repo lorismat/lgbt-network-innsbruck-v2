@@ -22,16 +22,15 @@
 - ~~set up map theme~~
 - ~~find timeline lib~~
 - ~~bypass airtable limit (100 records)~~
+- ~~build up map data with arqueos~~
+- ~~create a generic function to load all data from airtable~~
 
-- build up map data with arqueos
-- create a generic function to load all data from airtable
+- finish timeline
+- fix join in the map meetings
+- fix chrome map correspondence
+- start the sankey diagram
+- add loaders
 
-- viz 3 map meetings
-
-- viz 1 sankey
-- viz 2 timeline
-- viz 4 map corresp
-- viz 5 directed
 
 ## What I need
 
@@ -40,4 +39,3 @@
 ## Warning
 
 - API calls limit to 100 are bypassed by recursive functions (up to 10)
-- Direct link does not load the data (eg: map meetings)

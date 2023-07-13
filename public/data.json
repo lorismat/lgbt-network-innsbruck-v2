@@ -1,0 +1,55 @@
+{
+  "nodes": [
+    {
+      "name": "luke",
+      "category": "main"
+    },
+    {
+      "name": "john",
+      "category": "author"
+    },
+    {
+      "name": "jake",
+      "category": "author"
+    },
+    {
+      "name": "paris",
+      "category": "city"
+    },
+    {
+      "name": "london",
+      "category": "city"
+    },
+    {
+      "name": "ny",
+      "category": "city"
+    }
+  ],
+  "links": [
+    {
+      "source": "jake",
+      "target": "paris",
+      "value": 124.729
+    },
+    {
+      "source": "jake",
+      "target": "london",
+      "value": 100
+    },
+    {
+      "source": "luke",
+      "target": "paris",
+      "value": 26.862
+    },
+    {
+      "source": "luke",
+      "target": "ny",
+      "value": 280.322
+    },
+    {
+      "source": "john",
+      "target": "paris",
+      "value": 81.144
+    }
+  ]
+}

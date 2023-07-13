@@ -96,7 +96,7 @@ onMounted(() => {
       let notes = ''
       let participantString = "<span class='font-bold'>Participants:</span><br>"
       for (let j = 0; j<location.participants.length; j++) {
-        const participantInfo = peopleDataset.value.filter(x => x['ID'] == location.participants[j])[0]
+        const participantInfo = peopleDataset.value.filter(x => x['ID_1'] == location.participants[j])[0]
         participantString += '• ' + participantInfo.ID + 
           ` (${participantInfo['Date of birth']} — ${participantInfo['Date of death']})` + 
           `<br>${participantInfo['Nationality'] != undefined ? participantInfo['Nationality'][0] : ''}; ` + 

@@ -26,7 +26,11 @@ const mapMeetingsDataset = useState('mapMeetingsDataset', () => [])
 const mapCorrespondenceDatasetIn = useState('mapCorrespondenceDatasetIn', () => [])
 const mapCorrespondenceDatasetOut = useState('mapCorrespondenceDatasetOut', () => [])
 const peopleDataset = useState('peopleDataset', () => [])
+const sankeyMeetings = useState('sankeyMeetings', () => [])
+const directedMeetings = useState('directedMeetings', () => [])
 
+// temp dataset
+const tempDataset = useState('tempDataset', () => [])
 const meetingsDataset = useState('meetingsDataset', () => [])
 
 const meetingsDatasetUnroll = useState('meetingsDatasetUnroll', () => [])
@@ -54,6 +58,65 @@ onMounted(() => {
   iterCalls(iterator, appConfig.atTableDocuments, offsetDocuments, dataDocuments, triggerDocuments)
   iterCalls(iterator, appConfig.atTableMaterial, offsetMaterial, dataMaterial, triggerMaterial)
   iterCalls(iterator, appConfig.atTablePeople, offsetPeople, dataPeople, triggerPeople)
+})
+
+// mapSankeyDataset
+watch(() => [triggerLocations.value, triggerMeetings.value], () => {
+  const tempTableLinks = aq.table({ source: ['a', 'a', 'a', 'b', 'b', 'c'], target: ['london', 'paris', 'ny', 'london', 'paris', 'ny'], value: [124, 26, 100, 280, 81, 10] })
+  const tempTableNodes = aq.table({ name: ['a', 'b', 'c', 'london', 'paris', 'ny'], category: ['aut', 'aut', 'aut', 'city', 'city', 'city'] })
+  tempDataset.value = {
+    'nodes': tempTableNodes.objects(),
+    'links': tempTableLinks.objects()
+  }
+
+  // process: 
+  // get the meeting table
+  // unroll by participants
+  // join with the People table to get participants info
+  // join with locations to get the places info
+  // group by meetings (array of participants)
+
+  // format in a nodes/links pattern
+
+  const meetings = dataMeetings.value.map(x => x.fields)
+  const locations = dataLocations.value.map(x => x.fields)
+  const people = dataPeople.value.map(x => x.fields)
+
+  locations.forEach((location, i) => {
+    location['createdLoc'] = dataLocations.value[i].id
+  })
+  people.forEach((people, i) => {
+    people['participant_rec'] = dataPeople.value[i].id
+  })
+  meetings.forEach((meeting, index) => {
+    if (meeting['Location'] != undefined) {
+      meeting['createdLoc'] = meeting['Location'][0]
+      meeting['participant_rec'] = meeting['Participants']
+    }
+  })
+
+  const tLocations = aq.from(locations)
+  const tMeetings = aq.from(meetings)
+  const tPeople = aq.from(people)
+  let tMeetingsUnroll = aq.from(meetings).unroll('participant_rec')
+
+  const tMeetingsUnrollLocated = tMeetingsUnroll.join(tLocations, 'createdLoc')
+  const tMeetingsUnrollLocatedParticipants = tMeetingsUnrollLocated.join(tPeople, 'participant_rec')
+
+  // ID_1 is the meeting ID
+  const groupedMeetingsAll = tMeetingsUnrollLocatedParticipants.groupby('ID_1').rollup({
+      city: aq.op.max('Name'),
+      source: aq.op.max('Document (evidence of meeting)'),
+      participants: aq.op.array_agg('ID'),
+      dateStart: aq.op.max('Start date'),
+      notes: aq.op.max('Summary'),
+    }).objects();
+
+  console.log('tMeetingsUnrollLocated', groupedMeetingsAll)
+
+  sankeyMeetings.value = groupedMeetingsAll;
+  directedMeetings.value = groupedMeetingsAll;
+
 })
 
 // mapMeetingsDataset
@@ -84,7 +147,6 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
       lon: aq.op.mean('Longitude')
     }).objects();
 
-    console.log('map meetings ready')
   }
 })
 
@@ -98,14 +160,18 @@ watch(() => [triggerMaterial.value], () => {
       location['createdLocOut'] = dataLocations.value[i].id
     })
     
-
     let materials = dataMaterial.value.sort((a, b) => {
-      if (a.fields['Location written (if letter)'] == undefined || a.fields['Location received (if individual letter)'] == undefined ||  a.fields['Summary'] == undefined) {
+      if (
+        a.fields['Location written (if letter)'] == undefined || 
+        a.fields['Location received (if individual letter)'] == undefined ||  
+        a.fields['Summary'] == undefined
+      ) {
         return 1;
       } else {
-        return 0
+        return -1
       };
     }).map(x => x.fields)
+
     materials.forEach((material, index) => {
       if (material['Location written (if letter)'] != undefined) {
         material['createdLocIn'] = material['Location written (if letter)'][0]
@@ -115,13 +181,18 @@ watch(() => [triggerMaterial.value], () => {
       }
     })
 
-    materials = materials.filter(d => d['Type'] == 'Letter')
+    materials = materials.sort((a, b) => {
+      if (a['createdLocIn'] == undefined || a['createdLocOut'] == undefined) {
+        return 1;
+      } else {
+        return -1
+      };
+    }).filter(d => d['Type'] == 'Letter')
     const tLocations = aq.from(locations)
     const tMaterial = aq.from(materials)
 
     const tCorrespondenceCompleteIn = tMaterial.join(tLocations, 'createdLocIn')
     const tCorrespondenceCompleteOut = tMaterial.join(tLocations, 'createdLocOut')
-
 
     mapCorrespondenceDatasetIn.value = tCorrespondenceCompleteIn.groupby('createdLocIn').rollup({
       city: aq.op.max('Name'),
@@ -148,7 +219,6 @@ watch(() => [triggerMaterial.value], () => {
   }
 
   // lettersDataset.value = tMaterial.objects().filter(x => x.Type == 'Letter')
-  console.log('map correspondence ready')
   
 })
 
@@ -163,14 +233,25 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     // create people table: sort by Nationality to prevent
     // the base array to skip the Nationality field
     const people = dataPeople.value.sort((a, b) => {
-      if (a.fields.Nationality == undefined) {
-        return 1;
+      if (
+        a.fields.Nationality == undefined || 
+        a.fields['Place of birth'] == undefined || 
+        a.fields['Place of death'] == undefined  
+      ) {
+        return 1
       } else {
-        return 0
+        return -1
       };
     }).map(x => x.fields)
+
     people.forEach((person, i) => {
       person['createdPerson'] = dataPeople.value[i].id
+      if (dataPeople.value[i].fields['Place of birth'] != undefined) {
+        person['pob'] = dataPeople.value[i].fields['Place of birth'][0]
+      }
+      if (dataPeople.value[i].fields['Place of death'] != undefined) {
+        person['pod'] = dataPeople.value[i].fields['Place of death'][0]
+      }
     })
     const tPeople = aq.from(people)
 
@@ -178,11 +259,16 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     locations.forEach((location, i) => {
       location['createdLocIn'] = dataLocations.value[i].id
       location['createdLocOut'] = dataLocations.value[i].id
+      location['pob'] = dataLocations.value[i].id
+      location['pod'] = dataLocations.value[i].id
     })
 
-    const tLocations = aq.from(locations)
+    const tLocationsBirth = aq.from(locations)
+    const tLocationsDeath = aq.from(locations)
 
-    peopleDataset.value = tPeople.objects()
+    let tPeopleComplete = tPeople.join_left(tLocationsBirth, 'pob')
+ 
+    peopleDataset.value = tPeopleComplete.objects()
 
     // each table should have the same colums
     const meetings = dataMeetings.value.map(x => x.fields)
@@ -216,15 +302,16 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
 
     tMeetings = tMeetings.derive({ authorUnified: d => d['Participants'] })
     tMeetingsUnroll = tMeetingsUnroll.derive({ authorUnified: d => d['Participants'] })
+
     tDocuments = tDocuments.derive({ authorUnified: d => d['Author'] })
     tMaterial = tMaterial.derive({ authorUnified: d => d['Agent'] })
 
     meetingsDataset.value = tMeetings.objects()
     meetingsDatasetUnroll.value = tMeetingsUnroll.objects()
+    console.log('meetings', meetingsDataset.value,  meetingsDatasetUnroll.value);
     documentsDataset.value = tDocuments.objects()
     materialDataset.value = tMaterial.objects()
 
-    console.log('timeline ready')
     
   }
 })

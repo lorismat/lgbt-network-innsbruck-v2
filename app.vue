@@ -24,7 +24,13 @@ useHead({
     {
       src: '/libs/leaflet-marker-cluster/leaflet.markercluster.js',
       type: 'text/javascript'
-    }
+    },
+    /*
+    {
+      src: '/libs/d3-sankey/d3-sankey.min.js',
+      type: 'text/javascript'
+    },
+    */
   ],
   link: [
     {

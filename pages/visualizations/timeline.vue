@@ -82,18 +82,8 @@ const meetingsDatasetUnroll = useState('meetingsDatasetUnroll')
 const documentsDataset = useState('documentsDataset')
 const materialDataset = useState('materialDataset')
 
-const timelineDataset = ref([
-  { id: 1, content: "item 1", start: "2014-04-20" },
-  { id: 2, content: "item 2", start: "2014-04-14" },
-  { id: 3, content: "item 3", start: "2014-04-18" },
-  { id: 4, content: "item 4", start: "2014-04-16", end: "2014-04-19" },
-  { id: 5, content: "item 5", start: "2014-04-25" },
-  { id: 6, content: "item 6", start: "2014-04-27", type: "point" }
-])
-
-
 onMounted(() => {
-  allAuthors.value = peopleDataset.value.filter(x => x['Date of birth'] != undefined && x['Date of death'] != undefined).map(x => x.ID)
+  allAuthors.value = peopleDataset.value.filter(x => x['Date of birth'] != undefined && x['Date of death'] != undefined).map(x => x.ID_1)
   allAuthors.value.push('')
 })
 
@@ -101,10 +91,12 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
   const container = document.getElementById('timeline')
   container.innerHTML = ''
-  const vals = peopleDataset.value.filter(x =>  x.ID == author.value)[0]
+  const vals = peopleDataset.value.filter(x =>  x.ID_1 == author.value)[0]
+
+  console.log('vals', vals);
   
   authorInfo.value = {
-    name: vals['ID'],
+    name: vals['ID_1'],
     dob: vals['Date of birth'],
     dod: vals['Date of death'], 
     occupation: vals['Occupation'],
@@ -112,30 +104,40 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
   }
 
   const itemsArray = []
-  
+  const pod = ''
+
   if (vals['Date of birth'] != undefined) {
+    let pob = ''
+    if (vals['Name'] != undefined) {
+      pob = '(' + vals['Name'] + ')'
+    }
     itemsArray.push(
-      { id: 'dob', content: "DOB", start: vals['Date of birth'], className: 'metaClass gray', showMajorLabels: false }
+      { id: 'dob', content: `Date of Birth ${pob}`, start: vals['Date of birth'], className: 'metaClass gray', showMajorLabels: false }
     )
   }
 
   if (vals['Date of death'] != undefined) {
     itemsArray.push(
-      { id: 'dod', content: "DOD", start: vals['Date of death'], className: 'metaClass gray',  showMajorLabels: false }
+      { id: 'dod', content: `Date of Death`, start: vals['Date of death'], className: 'metaClass gray',  showMajorLabels: false }
     )
   }
 
   const meetings = meetingsDatasetUnroll.value.filter(x => x['authorUnified'] == vals.createdPerson)
   for (let i = 0; i<meetings.length; i++) {
     if (meetings[i]['Start date'] != undefined && meetings[i]['Summary'] != undefined && selectedEvents.value.includes('Meetings')) {
+      
+      console.log('meet',meetings[i]);
+      const participants = meetings[i]['Participants'];
+      const cityMeeting = meetings[i]['Location'][0];
+      
       itemsArray.push(
         { 
           id: 'meeting-' + i, 
-          content: meetings[i]['Summary'].slice(0,20) + '...', 
+          content: `Meeting with ${participants} in ${cityMeeting}`, 
           title: meetings[i]['Summary'].slice(0,50), 
           start: meetings[i]['Start date'], 
           className: 'metaClass beige',
-          description: meetings[i]['Summary'],  
+          description: `Meeting with ${participants} in ${cityMeeting}`,  
         }
       )
     }
@@ -222,6 +224,10 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 </script>
 
 <style>
+
+.metaClass {
+  /* font-size: 10px; */
+}
 
 .gray {
   background-color: #e6e6e6;

@@ -42,9 +42,10 @@ const specIcon = ref();
 
 function generateMarker(dataset, L, map, target) {
 
+  console.log(dataset);
+
   if (markers.value != undefined) {
     map.removeLayer(markers.value);
-    console.log('post', map)
 
     // reinitialize markers
     markers.value = L.markerClusterGroup({
