@@ -1,6 +1,6 @@
 <template>
   <HeaderViz />
-  <TimelineTooltip 
+  <Tooltip 
     :description="popupDescription"
   />
   <BaseContent 
@@ -8,8 +8,7 @@
     part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
     part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
   />
-  <div class="pt-8 pb-12">
-    <div class="text-red-600 capitalize py-4">data inside the pop is not yet aggregated</div>
+  <div class="py-12">
     <FormKit
       v-model="author"
       type="select"
@@ -70,30 +69,26 @@
 
 const selectedEvents = ref(['Meetings', 'Material Exchanges', 'Publications'])
 
-const author = useState('author')
+const author = ref('')
 const authorInfo = ref('')
-const allAuthors = ref([''])
+const allAuthors = useState('allAuthors')
+
 
 const popupDescription = ref('')
-const popupTimelineVisible = useState('popupTimelineVisible', () => false)
+const popupVisible = useState('popupVisible', () => false)
 
 const peopleDataset = useState('peopleDataset')
 const meetingsDatasetUnroll = useState('meetingsDatasetUnroll')
+const meetingsAgg = useState('meetingsAgg')
 const documentsDataset = useState('documentsDataset')
 const materialDataset = useState('materialDataset')
 
-onMounted(() => {
-  allAuthors.value = peopleDataset.value.filter(x => x['Date of birth'] != undefined && x['Date of death'] != undefined).map(x => x.ID_1)
-  allAuthors.value.push('')
-})
 
 watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
   const container = document.getElementById('timeline')
   container.innerHTML = ''
   const vals = peopleDataset.value.filter(x =>  x.ID_1 == author.value)[0]
-
-  console.log('vals', vals);
   
   authorInfo.value = {
     name: vals['ID_1'],
@@ -120,22 +115,23 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
     itemsArray.push(
       { id: 'dod', content: `Date of Death`, start: vals['Date of death'], className: 'metaClass gray',  showMajorLabels: false }
     )
-  }
+  }  
 
-  const meetings = meetingsDatasetUnroll.value.filter(x => x['authorUnified'] == vals.createdPerson)
+  let meetings = []
+  meetings = meetingsAgg.value.filter(x => x['participants'].includes(author.value))
+  
   for (let i = 0; i<meetings.length; i++) {
-    if (meetings[i]['Start date'] != undefined && meetings[i]['Summary'] != undefined && selectedEvents.value.includes('Meetings')) {
+    if (meetings[i]['dateStart'] != undefined && meetings[i]['location'] != undefined &&  meetings[i]['notes'] != undefined && selectedEvents.value.includes('Meetings')) {
       
-      console.log('meet',meetings[i]);
-      const participants = meetings[i]['Participants'];
-      const cityMeeting = meetings[i]['Location'][0];
-      
+      const participants = meetings[i]['participants'].filter(x => x != author.value).join(' - ');
+      const cityMeeting = meetings[i]['location'];
+
       itemsArray.push(
         { 
           id: 'meeting-' + i, 
           content: `Meeting with ${participants} in ${cityMeeting}`, 
-          title: meetings[i]['Summary'].slice(0,50), 
-          start: meetings[i]['Start date'], 
+          title: meetings[i]['notes'].slice(0,50), 
+          start: meetings[i]['dateStart'], 
           className: 'metaClass beige',
           description: `Meeting with ${participants} in ${cityMeeting}`,  
         }
@@ -161,14 +157,23 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
   const material = materialDataset.value.filter(x => x['authorUnified'] == vals.createdPerson)
   for (let i = 0; i<material.length; i++) {
-    if (material[i]['Start date of activity'] != undefined && selectedEvents.value.includes('Material Exchanges')) {
+    if (material[i]['dateStart'] != undefined && selectedEvents.value.includes('Material Exchanges')) {
+      
+      let content = '';
+      if (material[i]['type'] === 'Letter') {
+        content = `Letter to ${material[i]['participants']}`
+      } else if (material[i]['type'] === 'Allusion') {
+        content = `Allusion to ${material[i]['participants']}`
+      } else {
+        content = material[i]['type'];
+      }
       itemsArray.push(
         { 
           id: 'material-' + i, 
-          content: material[i]['Type'].slice(0, 20), 
-          start: material[i]['Start date of activity'], 
+          content: content, 
+          start: material[i]['dateStart'], 
           className: 'metaClass dark-brown',
-          description: material[i]['Type'],
+          description: material[i]['type'],
         }
       )
     }
@@ -214,7 +219,7 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
     const el = document.getElementById(e.items[0])  
     if (el.id != 'dob' && el.id != 'dod') {
       popupDescription.value = el.dataset.description
-      popupTimelineVisible.value = true
+      popupVisible.value = true
     }
   });
 

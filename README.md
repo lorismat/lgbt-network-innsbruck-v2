@@ -24,12 +24,22 @@
 - ~~bypass airtable limit (100 records)~~
 - ~~build up map data with arqueos~~
 - ~~create a generic function to load all data from airtable~~
+- ~~fix chrome map correspondence~~
+- ~~click events on the sankey diagram + directed~~
+- ~~finish timeline~~
+- ~~change pictures~~
 
-- finish timeline
-- fix join in the map meetings
-- fix chrome map correspondence
-- start the sankey diagram
+- ~~fix join in the map meetings~~
+
+- finish map correspondence
+
 - add loaders
+- add watcher when direct link
+- finish directed graph with publications
+
+- fix pop up sankey
+- fix pop up directed 
+- fix pop up timeline
 
 
 ## What I need

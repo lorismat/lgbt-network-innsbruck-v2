@@ -29,11 +29,15 @@ const peopleDataset = useState('peopleDataset', () => [])
 const sankeyMeetings = useState('sankeyMeetings', () => [])
 const directedMeetings = useState('directedMeetings', () => [])
 
+// allAuthors for dropdown select
+const allAuthors = useState('allAuthors', () => [])
+
 // temp dataset
 const tempDataset = useState('tempDataset', () => [])
 const meetingsDataset = useState('meetingsDataset', () => [])
 
 const meetingsDatasetUnroll = useState('meetingsDatasetUnroll', () => [])
+const meetingsAgg = useState('meetingsAgg', () => [])
 const documentsDataset = useState('documentsDataset', () => [])
 const materialDataset = useState('materialDataset', () => [])
 
@@ -60,7 +64,7 @@ onMounted(() => {
   iterCalls(iterator, appConfig.atTablePeople, offsetPeople, dataPeople, triggerPeople)
 })
 
-// mapSankeyDataset
+// sankey + directed
 watch(() => [triggerLocations.value, triggerMeetings.value], () => {
   const tempTableLinks = aq.table({ source: ['a', 'a', 'a', 'b', 'b', 'c'], target: ['london', 'paris', 'ny', 'london', 'paris', 'ny'], value: [124, 26, 100, 280, 81, 10] })
   const tempTableNodes = aq.table({ name: ['a', 'b', 'c', 'london', 'paris', 'ny'], category: ['aut', 'aut', 'aut', 'city', 'city', 'city'] })
@@ -96,7 +100,6 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
   })
 
   const tLocations = aq.from(locations)
-  const tMeetings = aq.from(meetings)
   const tPeople = aq.from(people)
   let tMeetingsUnroll = aq.from(meetings).unroll('participant_rec')
 
@@ -111,8 +114,6 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
       dateStart: aq.op.max('Start date'),
       notes: aq.op.max('Summary'),
     }).objects();
-
-  console.log('tMeetingsUnrollLocated', groupedMeetingsAll)
 
   sankeyMeetings.value = groupedMeetingsAll;
   directedMeetings.value = groupedMeetingsAll;
@@ -135,17 +136,19 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
     const tLocations = aq.from(locations)
     const tMeetings = aq.from(meetings)
 
-    const tMeetingsComplete = tMeetings.join(tLocations, 'createdLoc')
+    const tMeetingsComplete = tMeetings.join_left(tLocations, 'createdLoc')
+    console.log('meetings complete', tMeetingsComplete);
     mapMeetingsDataset.value = tMeetingsComplete.groupby('createdLoc').rollup({
       city: aq.op.max('Name'),
-      source: aq.op.max('Document (evidence of meeting)'),
-      participants: aq.op.max('ID (from Participants)'),
+      source: aq.op.array_agg('Document (evidence of meeting)'),
+      participants: aq.op.array_agg('ID (from Participants)'),
       dateStart: aq.op.array_agg('Start date'),
       notes: aq.op.array_agg('Summary'),
       count: aq.op.count(),
       lat: aq.op.mean('Latitude'),
       lon: aq.op.mean('Longitude')
     }).objects();
+    console.log('meetings map', mapMeetingsDataset.value)
 
   }
 })
@@ -270,6 +273,18 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
  
     peopleDataset.value = tPeopleComplete.objects()
 
+    // allAuthors for dropdown select
+    allAuthors.value = peopleDataset.value.filter(x => x['Date of birth'] != undefined && x['Date of death'] != undefined).map(x => x.ID_1)
+    allAuthors.value.sort((a, b) => {
+      if (a < b) {
+        return -1;
+      }
+      else {
+        return 1;
+      }
+    })
+    allAuthors.value.push('')
+
     // each table should have the same colums
     const meetings = dataMeetings.value.map(x => x.fields)
     let tMeetings = aq.from(meetings)
@@ -277,6 +292,9 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
 
     const documents = dataDocuments.value.map(x => x.fields)
     let tDocuments = aq.from(documents).unroll('Author')
+
+    // material: create a column for people
+    // column is an join array of both "Recipients if letter" and "People if Allusion"
     const material = dataMaterial.value.sort((a, b) => {
       if (
         a.fields['Location written (if letter)'] == undefined 
@@ -292,25 +310,68 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     }).map(x => x.fields)
 
     material.forEach((material, index) => {
+      let target = [material['People (if allusion)'], material['Recipient (if letter)']]
+      target = [...new Set(target)].filter((e) => {
+        return e !== undefined;
+      })
+      if (target.length > 0) {
+        material['target'] = target.flat()
+      } else {
+        material['target'] = ''
+      }
+    })
+
+    material.forEach((material, index) => {
       if (material['Location'] != undefined) {
         material['createdLocIn'] = material['Location written (if letter)'][0]
         material['createdLocOut'] = material['Location received (if individual letter)'][0]
       }
     })
 
-    let tMaterial = aq.from(material).unroll('Agent')
+    // getting all target names
+    let tMaterial = aq.from(material)
+    tMaterial = tMaterial.unroll('target')
+    // join with people table
+    tMaterial = tMaterial.join_left(tPeopleComplete, ['target', 'createdPerson'])
+    // group back
+    tMaterial = tMaterial.groupby('Material Exchange ID').rollup({
+      type: aq.op.max('Type'),
+      source: aq.op.max('Document'),
+      participants: aq.op.array_agg('ID_1'),
+      dateStart: aq.op.max('Start date of activity'),
+      notes: aq.op.max('Summary'),
+      agent: aq.op.max('Agent')
+    });
+
+    tMaterial = tMaterial.derive({ authorUnified: d => d['agent'] }).objects();
+    materialDataset.value = tMaterial;
+
 
     tMeetings = tMeetings.derive({ authorUnified: d => d['Participants'] })
     tMeetingsUnroll = tMeetingsUnroll.derive({ authorUnified: d => d['Participants'] })
 
     tDocuments = tDocuments.derive({ authorUnified: d => d['Author'] })
-    tMaterial = tMaterial.derive({ authorUnified: d => d['Agent'] })
+    
 
     meetingsDataset.value = tMeetings.objects()
-    meetingsDatasetUnroll.value = tMeetingsUnroll.objects()
-    console.log('meetings', meetingsDataset.value,  meetingsDatasetUnroll.value);
+
+    let fullMeetings = tMeetingsUnroll.join_left(tPeople, ['Participants', 'createdPerson'])
+    const tLoc = aq.from(locations);
+    fullMeetings = fullMeetings.join_left(tLoc, ['createdLoc', 'createdLoc'])
+
+    // meetingsDatasetUnroll has to be joined with people + locations
+    meetingsDatasetUnroll.value = fullMeetings.objects()
+    // group meetings together again (in case more than 2 participants)
+    meetingsAgg.value = fullMeetings.groupby('ID_1').rollup({ 
+      participants: aq.op.max('ID (from Participants)'),
+      source: aq.op.max('Document (evidence of meeting)'),
+      dateStart: aq.op.max('Start date'),
+      notes: aq.op.max('Summary'),
+      location: aq.op.max('Name'),
+    }).objects();
+    
     documentsDataset.value = tDocuments.objects()
-    materialDataset.value = tMaterial.objects()
+    
 
     
   }

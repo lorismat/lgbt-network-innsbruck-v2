@@ -6,8 +6,7 @@
     part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
   />
 
-  <div class="text-red-600 capitalize py-4">I just noticed an issue in the join of the data, I will fix this!</div>
-  <div class="pb-12 pt-6">
+  <div class="py-12">
     <div id="map"></div>
   </div>
 </template>
@@ -94,27 +93,35 @@ onMounted(() => {
     const location = mapMeetingsDataset.value[i];
     if (location.lat != undefined && location.lon != undefined) {
       let notes = ''
-      let participantString = "<span class='font-bold'>Participants:</span><br>"
-      for (let j = 0; j<location.participants.length; j++) {
-        const participantInfo = peopleDataset.value.filter(x => x['ID_1'] == location.participants[j])[0]
-        participantString += '• ' + participantInfo.ID + 
-          ` (${participantInfo['Date of birth']} — ${participantInfo['Date of death']})` + 
-          `<br>${participantInfo['Nationality'] != undefined ? participantInfo['Nationality'][0] : ''}; ` + 
-          `${participantInfo['Occupation'] != undefined ? participantInfo['Occupation'].join(', ') : ''}` +
-          `. <span class=''>${participantInfo['Sexual orientation']}</span><br>`
-          '<br><br>'
+      let participantString = []
+      for (let j = 0; j<location.participants.length; j++) { 
+        let participantStringEl = "<span class='font-bold'>Participants:</span><br>"
+        for (let k = 0; k<location.participants[j].length; k++) {
+          const participantInfo = peopleDataset.value.filter(x => x['ID_1'] === location.participants[j][k])[0]
+          if (participantInfo != undefined) {
+            participantStringEl += '• ' + participantInfo.ID_1 + 
+            ` (${participantInfo['Date of birth']} — ${participantInfo['Date of death']})` + 
+            `<br>${participantInfo['Nationality'] != undefined ? participantInfo['Nationality'][0] : ''}; ` + 
+            `${participantInfo['Occupation'] != undefined ? participantInfo['Occupation'].join(', ') : ''}` +
+            `. <span class=''>${participantInfo['Sexual orientation']}</span><br>`
+            '<br><br>'
+          }
+        }
+        participantString.push(participantStringEl)
       }
+
       for (let j = 0; j<location.notes.length; j++) {
         notes += `
           <div class='border-b border-dotted border-gray-600 pb-1 pt-4 px-2'>
             <span class='font-bold'>${location.dateStart[j]}:</span> ${location.notes[j]}
             <br><br>
-            ${participantString}
+            ${participantString[j]}
             <br><br>
-            <span class='font-bold'>Source:</span> ${location.source.split('_')[0]}
+            <span class='font-bold'>Source:</span> ${location.source[j].split('_')[0]}
           </div>
         `
       }
+      
       const textBlock = `
         <h2 class='text-md font-bold p-2 border-b border-gray-400'>Meetings in ${location.city} <span class='font-normal'>(${location.count})</span></h2>
         <div class='px-0 py-0'>
