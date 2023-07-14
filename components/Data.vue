@@ -236,7 +236,6 @@ watch(() => [triggerMaterial.value], () => {
     tCorrespondenceCompleteIn = tCorrespondenceCompleteIn.join_left(tPeopleAgent, ['Agent_uniq','agent_id'])
     tCorrespondenceCompleteIn = tCorrespondenceCompleteIn.join_left(tPeopleRecipient, ['Recipient_uniq','recipient_id'])
 
-    console.log(tCorrespondenceCompleteIn)
     mapCorrespondenceDatasetIn.value = tCorrespondenceCompleteIn.groupby('createdLocIn').rollup({
       city: aq.op.max('Name'),
       source: aq.op.array_agg('ID_1'),
@@ -249,11 +248,15 @@ watch(() => [triggerMaterial.value], () => {
       lon: aq.op.mean('Longitude')
     }).objects();
 
+    tCorrespondenceCompleteOut = tCorrespondenceCompleteOut.join_left(tDocuments, 'Document_new')
+    tCorrespondenceCompleteOut = tCorrespondenceCompleteOut.join_left(tPeopleAgent, ['Agent_uniq','agent_id'])
+    tCorrespondenceCompleteOut = tCorrespondenceCompleteOut.join_left(tPeopleRecipient, ['Recipient_uniq','recipient_id'])
+
     mapCorrespondenceDatasetOut.value = tCorrespondenceCompleteOut.groupby('createdLocOut').rollup({
       city: aq.op.max('Name'),
-      source: aq.op.array_agg('ID_2'),
-      agent: aq.op.array_agg('Agent'),
-      recipient: aq.op.array_agg('Recipient (if letter)'),
+      source: aq.op.array_agg('ID_1'),
+      agent: aq.op.array_agg('agent_name_1'),
+      recipient: aq.op.array_agg('recipient_name'),
       dateStart: aq.op.array_agg('Start date of activity'),
       notes: aq.op.array_agg('Summary'),
       count: aq.op.count(),
