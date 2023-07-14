@@ -229,7 +229,7 @@ watch(() => author.value, (newValue, oldValue) => {
       }
 
       function click(event, el) {
-        popupDescription.value = "hey"
+        popupDescription.value = "WIP"
         popupVisible.value = true
       }
 

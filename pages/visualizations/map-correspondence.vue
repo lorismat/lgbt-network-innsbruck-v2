@@ -68,10 +68,9 @@ function generateMarker(dataset, L, map, target) {
 
   for (let i = 0; i<dataset.length; i++) {
     const location = dataset[i];
+
     if (location.lat != undefined && location.lon != undefined) {
       let notes = ''
-      let agentString = ''
-      let recipientString = ''
       /*
       const agentInfo = peopleDataset.value.filter(x => x['ID'] == location.agent)[0]
       let agentString = `<span class='font-bold'>Agent:</span>${agentInfo.ID}<br>`
@@ -87,6 +86,10 @@ function generateMarker(dataset, L, map, target) {
       */
 
       for (let j = 0; j<location.notes.length; j++) {
+
+        let agentString = location.agent[j]
+        let recipientString = location.recipient[j]
+
         notes += `
           <div class='border-b border-dotted border-gray-600 pb-1 pt-4 px-2'>
             <span class='font-bold'>${location.dateStart[j]}:</span> ${location.notes[j]}
@@ -94,7 +97,7 @@ function generateMarker(dataset, L, map, target) {
             <span class='font-bold'>Agent:</span> ${agentString}<br>
             <span class='font-bold'>Recipient:</span> ${recipientString}
             <br><br>
-            <span class='font-bold'>Source:</span> ${location.source}
+            <span class='font-bold'>Source:</span> ${location.source[j].split('_')[0]}
           </div>
         `
       }

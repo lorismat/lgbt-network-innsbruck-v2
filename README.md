@@ -28,15 +28,12 @@
 - ~~click events on the sankey diagram + directed~~
 - ~~finish timeline~~
 - ~~change pictures~~
-
 - ~~fix join in the map meetings~~
-
-- finish map correspondence
+- ~~finish map correspondence~~
 
 - add loaders
 - add watcher when direct link
 - finish directed graph with publications
-
 - fix pop up sankey
 - fix pop up directed 
 - fix pop up timeline

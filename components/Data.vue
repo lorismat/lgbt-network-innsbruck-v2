@@ -184,6 +184,12 @@ watch(() => [triggerMaterial.value], () => {
       }
     })
 
+    materials.forEach((material, index) => {
+      material['Document_new'] = material['Document'][0]
+      material['Agent_uniq'] = material['Agent'] != undefined ? material['Agent'][0] : ''
+      material['Recipient_uniq'] = material['Recipient (if letter)'] != undefined ? material['Recipient (if letter)'][0] : ''
+    })
+
     materials = materials.sort((a, b) => {
       if (a['createdLocIn'] == undefined || a['createdLocOut'] == undefined) {
         return 1;
@@ -191,16 +197,51 @@ watch(() => [triggerMaterial.value], () => {
         return -1
       };
     }).filter(d => d['Type'] == 'Letter')
+
     const tLocations = aq.from(locations)
     const tMaterial = aq.from(materials)
 
-    const tCorrespondenceCompleteIn = tMaterial.join(tLocations, 'createdLocIn')
-    const tCorrespondenceCompleteOut = tMaterial.join(tLocations, 'createdLocOut')
+    let tCorrespondenceCompleteIn = tMaterial.join(tLocations, 'createdLocIn')
+    let tCorrespondenceCompleteOut = tMaterial.join(tLocations, 'createdLocOut')
 
+    locations.forEach((location, i) => {
+      location['createdLoc'] = dataLocations.value[i].id
+    })
+
+    const documents = dataDocuments.value.map(x => x.fields)
+    documents.forEach((document, i) => {
+      document['Document_new'] = dataDocuments.value[i].id
+    })
+
+    let tDocuments = aq.from(documents)
+
+    tCorrespondenceCompleteIn = tCorrespondenceCompleteIn.join_left(tDocuments, 'Document_new')
+    tCorrespondenceCompleteOut = tCorrespondenceCompleteOut.join_left(tDocuments, 'Document_new')
+
+    const peopleAgent = dataPeople.value.map(x => x.fields)
+    peopleAgent.forEach((people, i) => {
+      people['agent_id'] = dataPeople.value[i].id
+      people['agent_name'] = people['ID']
+    })
+    const tPeopleAgent = aq.from(peopleAgent)
+
+    const peopleRecipient = dataPeople.value.map(x => x.fields)
+    peopleRecipient.forEach((people, i) => {
+      people['recipient_id'] = dataPeople.value[i].id
+      people['recipient_name'] = people['ID']
+    })
+    const tPeopleRecipient = aq.from(peopleRecipient)
+
+    tCorrespondenceCompleteIn = tCorrespondenceCompleteIn.join_left(tDocuments, 'Document_new')
+    tCorrespondenceCompleteIn = tCorrespondenceCompleteIn.join_left(tPeopleAgent, ['Agent_uniq','agent_id'])
+    tCorrespondenceCompleteIn = tCorrespondenceCompleteIn.join_left(tPeopleRecipient, ['Recipient_uniq','recipient_id'])
+
+    console.log(tCorrespondenceCompleteIn)
     mapCorrespondenceDatasetIn.value = tCorrespondenceCompleteIn.groupby('createdLocIn').rollup({
       city: aq.op.max('Name'),
-      source: aq.op.max('Document'),
-      agent: aq.op.max('Agent'),
+      source: aq.op.array_agg('ID_1'),
+      agent: aq.op.array_agg('agent_name_1'),
+      recipient: aq.op.array_agg('recipient_name'),
       dateStart: aq.op.array_agg('Start date of activity'),
       notes: aq.op.array_agg('Summary'),
       count: aq.op.count(),
@@ -210,8 +251,9 @@ watch(() => [triggerMaterial.value], () => {
 
     mapCorrespondenceDatasetOut.value = tCorrespondenceCompleteOut.groupby('createdLocOut').rollup({
       city: aq.op.max('Name'),
-      source: aq.op.max('Document'),
-      agent: aq.op.max('Agent'),
+      source: aq.op.array_agg('ID_2'),
+      agent: aq.op.array_agg('Agent'),
+      recipient: aq.op.array_agg('Recipient (if letter)'),
       dateStart: aq.op.array_agg('Start date of activity'),
       notes: aq.op.array_agg('Summary'),
       count: aq.op.count(),
