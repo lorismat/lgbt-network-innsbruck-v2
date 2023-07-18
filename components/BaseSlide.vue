@@ -1,5 +1,5 @@
 <template>
-  <div class="my-12">
+  <div :class="small ? 'my-1' : 'my-12'">
     <div class="text-left font-sans uppercase">
       {{ title }}
     </div>
@@ -21,6 +21,10 @@ const props = defineProps({
   },
   title: {
     type: String
+  }, 
+  small: {
+    type: Boolean,
+    default: false
   }
 })
 

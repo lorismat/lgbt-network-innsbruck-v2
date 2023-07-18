@@ -8,16 +8,13 @@
       <br>
       <div class="py-6 px-12 font-bold">
         I. Revamping the website <br>
-        II. Presenting the new sections & visualizations <br>
-        III. Introducing new data & functionalities <br>
-        IV. Extra requirements <br>
+        II. Introducing new functionalities <br>
+        III. Presenting new visualizations <br>
       </div>
       <div>
-
         In the first part, <span class="italic">Revamping the website</span>, we present how the new website could present the visualisations in a different way. While the current version gives a good overview of the data by location and author, it lacks harmony and organisation. The idea would be to organise it better while giving the overall scope of the network in the current study. <br>
-        In the second part, <span class="italic">Presenting the new sections & visualizations</span>, we will draw attention to the new visuals designed to explore the database in depth. <br>
-        In the third part, <span class="italic">Introducing new data & functionalities</span>, we will show how the new functionalities can be used to display new data to make the study even more relevant. <br>
-        In the final part, <span class="italic">Extra requirements</span>, we are listing some key requirements to push the new website further. 
+        In the second part, <span class="italic">Introducing new functionalities</span>, we will show how the new functionalities can be used to display new data and make the study even more relevant. <br>
+        In the third part, <span class="italic">Presenting the new visualizations</span>, we will draw attention to the new visuals designed to explore the database in depth. <br>
       </div>
       
     </div>
@@ -52,37 +49,127 @@
       legend="In this block, you have a geographical view of the data, including Birth countries, Exile countries, Meetings and Correspondence."
     />
 
+    <TheSubTitle subtitle="II. Introducing new functionalities"/>
+    <div class="mx-auto text-gray-800 max-w-3xl">
+      In this section, we 
+      are presenting new functionalities within some visuals to better explore and explain the data. 
+      These new functionalities requires different aggregations and interactivities.
+      
+      <div class="py-6">
+        <div class="py-2 px-6 font-bold">
+          1. Various toggles accross the application
+        </div>
+        Within some key visuals, we introudce toggles to display different data within the same visualization. For example,
+        a choropleth map by "Country of Birth" or "Country of Exile"
+      </div>
 
-    <TheSubTitle subtitle="II. Presenting the new sections & visualizations"/>
+      <div class="mx-auto text-center">
+        <BaseSlide 
+          url="func_1"
+          class="mx-auto max-w-sm"
+          small="true"
+          />
+        <BaseSlide 
+          url="func_1_bis"
+          class="mx-auto max-w-sm"
+          small="true" 
+        />
+      </div>
+
+
+
+      <div class="py-6">
+        <div class="py-2 px-6 font-bold">
+          2. Timeline Filtering on maps
+        </div>
+        For the "Map of Correspondence" and the "Map of Meetings", we will add a timeline filter to select specific range
+         of data in time, and see the evolution
+      </div>
+
+      <div class="mx-auto text-center">
+        <BaseSlide 
+          url="func_2"
+          class="mx-auto max-w-xl"
+          small="true"
+          />
+      </div>
+
+      <div class="py-6">
+        <div class="py-2 px-6 font-bold">
+          3. Author Biopic
+        </div>
+        In the "by Author" section, we will enrich the data with extra informations about the author such as a short biography, a picture and its main publications. 
+      </div>
+
+      <div class="mx-auto text-center">
+        <BaseSlide 
+          url="func_3"
+          class="mx-auto max-w-xl"
+          small="true"
+          />
+      </div>
+      
+
+    </div>
+
+    
+
+    <TheSubTitle subtitle="III. Presenting the new visualizations"/>
     <div class="mx-auto text-gray-800 max-w-3xl">
       Before presenting each new visualization, it is important to remember that each new visualization requires a new way to 
       organize and aggregate the data. The work is both has to be done both in the way the data is organized and then visualized.
+    
+      <div class="py-6">
+        <div class="py-2 px-6 font-bold">
+          1. Key Metrics
+        </div>
+        Showing a first set of key metrics to present the scope of the data. 
+      </div>
+
+      <div class="mx-auto text-center">
+        <BaseSlide 
+          url="new_1"
+          class="mx-auto max-w-2xl"
+          small="true"
+          />
+      </div>
+
+
+
+      <div class="py-6">
+        <div class="py-2 px-6 font-bold">
+          2. A Bilevel Edge Bundling Network
+        </div>
+        This visualization allow us to get at a glance all the connection in the dataset (by meetings, or material exchange). Mousing over the authors 
+        will give extra insight. This visualization is good to see the links and their density between the different nodes (the authors).
+      </div>
+
+      <div class="mx-auto text-center">
+        <BaseSlide 
+          url="new_2"
+          class="mx-auto max-w-xl"
+          small="true"
+          />
+      </div>
+
+      <div class="py-6">
+        <div class="py-2 px-6 font-bold">
+          3. A Circle-Packing Visual
+        </div>
+        This visualization is good to see for a specific metric (eg: number of publication, number of meetings, quantity of material exchange) the 
+        space it takes in comparison with others. This way we quickly know who is represented in the database and how. 
+      </div>
+
+      <div class="mx-auto text-center">
+        <BaseSlide 
+          url="new_3"
+          class="mx-auto max-w-xl"
+          small="true"
+          />
+      </div>
+    
+    
     </div>
-
-    <BaseSlide 
-      url="slide_5" 
-    />
-
-    <TheSubTitle subtitle="III. Introducing new data & functionalities"/>
-    <div class="mx-auto text-gray-800 max-w-3xl">
-      In the two previous sections, we introduced a new way to organize the website along with new visuals. In this section, we 
-      are presenting new functionalities within some visuals to better explore and explain the data. 
-      These new functionalities requires different aggregations and interactivities.
-    </div>
-
-    <BaseSlide 
-      url="slide_5" 
-    />
-
-    <TheSubTitle subtitle="IV. Extra requirements"/>
-    <div class="mx-auto text-gray-800 max-w-3xl">
-      Finally, working on the new website will imply some extra requirements in terms of tools and maintenance. Here, 
-      we are describing new tasks implied by the revamping of the website.  
-    </div>
-
-    <BaseSlide 
-      url="slide_5" 
-    />
 
   </div>
 </template>
