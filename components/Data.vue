@@ -36,7 +36,6 @@ const allAuthors = useState('allAuthors', () => [])
 const tempDataset = useState('tempDataset', () => [])
 const meetingsDataset = useState('meetingsDataset', () => [])
 
-const meetingsDatasetUnroll = useState('meetingsDatasetUnroll', () => [])
 const meetingsAgg = useState('meetingsAgg', () => [])
 const documentsDataset = useState('documentsDataset', () => [])
 const materialDataset = useState('materialDataset', () => [])
@@ -112,6 +111,7 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
       source: aq.op.max('Document (evidence of meeting)'),
       participants: aq.op.array_agg('ID'),
       dateStart: aq.op.max('Start date'),
+      dateEnd: aq.op.max('End date'),
       notes: aq.op.max('Summary'),
     }).objects();
 
@@ -137,18 +137,18 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
     const tMeetings = aq.from(meetings)
 
     const tMeetingsComplete = tMeetings.join_left(tLocations, 'createdLoc')
-    console.log('meetings complete', tMeetingsComplete);
     mapMeetingsDataset.value = tMeetingsComplete.groupby('createdLoc').rollup({
       city: aq.op.max('Name'),
       source: aq.op.array_agg('Document (evidence of meeting)'),
       participants: aq.op.array_agg('ID (from Participants)'),
       dateStart: aq.op.array_agg('Start date'),
+      dateEnd: aq.op.array_agg('End date'),
+      page: aq.op.array_agg('Page number'),
       notes: aq.op.array_agg('Summary'),
       count: aq.op.count(),
       lat: aq.op.mean('Latitude'),
       lon: aq.op.mean('Longitude')
     }).objects();
-    console.log('meetings map', mapMeetingsDataset.value)
 
   }
 })
@@ -242,7 +242,9 @@ watch(() => [triggerMaterial.value], () => {
       agent: aq.op.array_agg('agent_name_1'),
       recipient: aq.op.array_agg('recipient_name'),
       dateStart: aq.op.array_agg('Start date of activity'),
+      dateEnd: aq.op.array_agg('End date of activity'),
       notes: aq.op.array_agg('Summary'),
+      page: aq.op.array_agg('Page number'),
       count: aq.op.count(),
       lat: aq.op.mean('Latitude'),
       lon: aq.op.mean('Longitude')
@@ -401,11 +403,10 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     meetingsDataset.value = tMeetings.objects()
 
     let fullMeetings = tMeetingsUnroll.join_left(tPeople, ['Participants', 'createdPerson'])
-    const tLoc = aq.from(locations);
-    fullMeetings = fullMeetings.join_left(tLoc, ['createdLoc', 'createdLoc'])
 
-    // meetingsDatasetUnroll has to be joined with people + locations
-    meetingsDatasetUnroll.value = fullMeetings.objects()
+    const tLoc = aq.from(locations);
+    fullMeetings = fullMeetings.join_left(tLoc, ['createdLoc', 'createdLoc']);
+
     // group meetings together again (in case more than 2 participants)
     meetingsAgg.value = fullMeetings.groupby('ID_1').rollup({ 
       participants: aq.op.max('ID (from Participants)'),
@@ -416,8 +417,6 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     }).objects();
     
     documentsDataset.value = tDocuments.objects()
-    
-
     
   }
 })

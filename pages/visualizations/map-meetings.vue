@@ -81,16 +81,20 @@ onMounted(() => {
       opacity: 0
     },
     iconCreateFunction: function(cluster) {
+
+      const radius = Math.max(30, Math.min(7 * cluster.getChildCount(), 100));
+
       return L.divIcon({ 
         html: cluster.getChildCount(),
         className: 'mycluster',
-        iconSize: L.point(35, 35)
+        iconSize: L.point(radius, radius)
       });
     }
   });
 
   for (let i = 0; i<mapMeetingsDataset.value.length; i++) {
     const location = mapMeetingsDataset.value[i];
+    console.log(location);
     if (location.lat != undefined && location.lon != undefined) {
       let notes = ''
       let participantString = []
@@ -113,11 +117,12 @@ onMounted(() => {
       for (let j = 0; j<location.notes.length; j++) {
         notes += `
           <div class='border-b border-dotted border-gray-600 pb-1 pt-4 px-2'>
-            <span class='font-bold'>${location.dateStart[j]}:</span> ${location.notes[j]}
+            <span class='font-bold'>${location.dateStart[j]} — ${location.dateEnd[j]}:</span> ${location.notes[j]}
             <br><br>
             ${participantString[j]}
             <br><br>
-            <span class='font-bold'>Source:</span> ${location.source[j].split('_')[0]}
+            <span class='font-bold'>Source:</span> <span class='italic'>${location.source[j].split('_')[0].split('by')[0]}</span> by <span>${location.source[j].split('_')[0].split('by')[1]}</span>
+            (p. ${location.page[j]})
           </div>
         `
       }
@@ -137,33 +142,3 @@ onMounted(() => {
   map.addLayer(markers);
 })
 </script>
-
-<style>
-#map { 
-  height: 600px; 
-}
-
-
-
-.mycluster {
-  background-color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  font-weight: bold;
-  border: 1px solid #222;
-}
-
-.leaflet-popup-content {
-  margin: 0 !important;
-  width: 350px !important;
-}
-.leaflet-popup-content-wrapper {
-  padding: 0px;
-  max-height: 400px;
-  
-  overflow: auto !important;
-}
-
-</style>

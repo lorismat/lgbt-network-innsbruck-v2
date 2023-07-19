@@ -20,8 +20,8 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-8">
-      <div v-for="card in cards">
+    <div class="grid grid-cols-6 gap-4 pb-4">
+      <div v-for="card in cards" :class="card.colSpan">
         <BaseCard 
           :title="card.title"
           :description="card.description"
@@ -30,8 +30,6 @@
         />
       </div>
     </div>
-
-
 
   </div>
   
@@ -49,31 +47,36 @@ const cards = [
     "title": "Sankey Diagram for Author Meetings",
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     "image": "images/graphs/1.png",
-    "url": "/visualizations/sankey"
+    "url": "/visualizations/sankey", 
+    "colSpan": "col-span-2"
   },
   {
     "title": "Timeline of Author Meetings and Material Exchanges",
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     "image": "images/graphs/2.png",
-    "url": "/visualizations/timeline"
+    "url": "/visualizations/timeline", 
+    "colSpan": "col-span-2"
   },
   {
     "title": "Map of Author Meetings",
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     "image": "images/graphs/3.png",
-    "url": "/visualizations/map-meetings"
+    "url": "/visualizations/map-meetings", 
+    "colSpan": "col-span-2"
   },
   {
     "title": "Map of Correspondence Between Authors",
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     "image": "images/graphs/4.png",
-    "url": "/visualizations/map-correspondence"
+    "url": "/visualizations/map-correspondence", 
+    "colSpan": "col-start-2 col-end-4"
   },
   {
-    "title": "Force-Directed Graph of Author Meetings and Material Exchanges",
+    "title": "Force-Directed Graph of Meetings and Exchanges",
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     "image": "images/graphs/5.png",
-    "url": "/visualizations/directed"
+    "url": "/visualizations/directed", 
+    "colSpan": "col-start-4 col-end-6"
   }
 ]
 

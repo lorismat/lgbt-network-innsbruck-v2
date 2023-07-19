@@ -123,7 +123,14 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
   for (let i = 0; i<meetings.length; i++) {
     if (meetings[i]['dateStart'] != undefined && meetings[i]['location'] != undefined &&  meetings[i]['notes'] != undefined && selectedEvents.value.includes('Meetings')) {
       
-      const participants = meetings[i]['participants'].filter(x => x != author.value).join(' - ');
+      let participants = meetings[i]['participants'].filter(x => x != author.value);
+      console.log(participants)
+
+      if (participants.length === 2) {
+        participants = participants.join(' and ')
+      } else if (participants.length > 2) {
+        participants = participants.join(', ')
+      }
       const cityMeeting = meetings[i]['location'];
 
       itemsArray.push(
@@ -145,8 +152,8 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
       itemsArray.push(
         { 
           id: 'document-' + i, 
-          content: documents[i]['Title'].slice(0, 20), 
-          title: documents[i]['Title'].slice(0, 50), 
+          content: documents[i]['Title'], 
+          title: documents[i]['Title'],  // 
           start: documents[i]['Year of publication (original)'], 
           className: 'metaClass light-brown',
           description: documents[i]['Title'],  

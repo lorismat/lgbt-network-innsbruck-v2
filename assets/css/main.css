@@ -15,6 +15,33 @@ body {
   font-family: "Playfair Display", serif;
 }
 
+/* maps */
+
+#map { 
+  height: 600px; 
+}
+
+.mycluster {
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-weight: bold;
+  border: 1px solid #222;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: 350px !important;
+}
+.leaflet-popup-content-wrapper {
+  padding: 0px;
+  max-height: 400px;
+  
+  overflow: auto !important;
+}
+
 /*
 
 Color Theme Swatches in Hex

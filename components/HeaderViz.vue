@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <ul class="flex gap-4 p-4 py-8 justify-between">
-      <li><NuxtLink activeClass="border-b-2 border-gray-800" class="hover:border-b-2 border-gray-200" to="/visualizations/sankey">Sankey Diagram</NuxtLink></li>
-      <li><NuxtLink activeClass="border-b-2 border-gray-800" class="hover:border-b-2 border-gray-200" to="/visualizations/timeline" @click="resetAuthors()">Timeline</NuxtLink></li>
-      <li><NuxtLink activeClass="border-b-2 border-gray-800" class="hover:border-b-2 border-gray-200" to="/visualizations/map-meetings">Map Meetings</NuxtLink></li>
-      <li><NuxtLink activeClass="border-b-2 border-gray-800" class="hover:border-b-2 border-gray-200" to="/visualizations/map-correspondence">Map Correspondence</NuxtLink></li>
-      <li><NuxtLink activeClass="border-b-2 border-gray-800" class="hover:border-b-2 border-gray-200" to="/visualizations/directed">Directed Graph</NuxtLink></li>
+  <div class="">
+    <ul class="flex my-8 justify-between border-b border-gray-400 border-dashed mb-8 py-4">
+      <li><NuxtLink activeClass="font-bold !text-black border-b-4 !border-black hover:!border-black" class="py-4 text-sm uppercase hover:border-b-4 hover:text-black hover:border-black border-gray-400 text-gray-400" to="/visualizations/sankey">Sankey Diagram</NuxtLink></li>
+      <li><NuxtLink activeClass="font-bold !text-black border-b-4 !border-black hover:!border-black" class="py-4 text-sm uppercase hover:border-b-4 hover:text-black hover:border-black border-gray-400 text-gray-400" to="/visualizations/timeline" @click="resetAuthors()">Timeline</NuxtLink></li>
+      <li><NuxtLink activeClass="font-bold !text-black border-b-4 !border-black hover:!border-black" class="py-4 text-sm uppercase hover:border-b-4 hover:text-black hover:border-black border-gray-400 text-gray-400" to="/visualizations/map-meetings">Map Meetings</NuxtLink></li>
+      <li><NuxtLink activeClass="font-bold !text-black border-b-4 !border-black hover:!border-black" class="py-4 text-sm uppercase hover:border-b-4 hover:text-black hover:border-black border-gray-400 text-gray-400" to="/visualizations/map-correspondence">Map Correspondence</NuxtLink></li>
+      <li><NuxtLink activeClass="font-bold !text-black border-b-4 !border-black hover:!border-black" class="py-4 text-sm uppercase hover:border-b-4 hover:text-black hover:border-black border-gray-400 text-gray-400" to="/visualizations/directed">Directed Graph</NuxtLink></li>
     </ul>
   </div>   
 </template>

@@ -2,6 +2,7 @@
   <HeaderViz />
   <Tooltip 
     :description="popupDescription"
+    :title="popupTitle"
   />
   <BaseContent 
     title="Sankey-Diagram for Author Meetings"
@@ -43,6 +44,7 @@ const peopleDataset = useState('peopleDataset')
 const sankeyMeetings = useState('sankeyMeetings')
 
 const popupDescription = ref('')
+const popupTitle = ref('')
 const popupVisible = useState('popupVisible', () => false)
 
 watch(() => author.value, (newValue, oldValue) => {
@@ -64,6 +66,8 @@ watch(() => author.value, (newValue, oldValue) => {
       return e.participants.includes(author.value);
     });
 
+    console.log(filteredMeetings)
+
     let nodesArray = []
     filteredMeetings.forEach((e, idx) => {
       nodesArray.push({
@@ -71,10 +75,13 @@ watch(() => author.value, (newValue, oldValue) => {
         "category": "city"
       })
       for (let i = 0; i<e.participants.length;i++) {
-        nodesArray.push({
-          "name": e.participants[i],
-          "category": e.participants[i] === author.value ? 1 : 2
-        })
+        if ( e.participants[i] != author.value ) {
+          nodesArray.push({
+            "name": e.participants[i],
+            "category": 2
+          })
+        }
+        
       }
     })
     nodesArray = [...new Map(nodesArray.map(v => [JSON.stringify([v.name,v.category]), v])).values()]
@@ -82,14 +89,26 @@ watch(() => author.value, (newValue, oldValue) => {
     let linksArray = []
     filteredMeetings.forEach((e, idx) => {
       for (let i = 0; i<e.participants.length;i++) {
-        if (linksArray.filter(it => it.source === e.participants[i] && it.target === e.city).length > 0) {
-          linksArray.filter(it => it.source === e.participants[i] && it.target === e.city)[0].value += 1;
-        } else {
-          linksArray.push({
-            "source": e.participants[i],
-            "target": e.city,
-            "value": 1
-          })
+        console.log('e', e)
+        if ( e.participants[i] != author.value ) { 
+
+          if (linksArray.filter(it => it.source === e.participants[i] && it.target === e.city).length > 0) {
+            linksArray.filter(it => it.source === e.participants[i] && it.target === e.city)[0].value += 1;
+            linksArray.filter(it => it.source === e.participants[i] && it.target === e.city)[0].meetings.push({
+              "dateStart": e.dateStart,
+              "dateEnd": e.dateEnd
+            })
+          } else {
+            linksArray.push({
+              "source": e.participants[i],
+              "target": e.city,
+              "value": 1,
+              "meetings": [{
+                "dateStart": e.dateStart,
+                "dateEnd": e.dateEnd
+              }]
+            })
+          }
         }
       }
     })
@@ -99,8 +118,10 @@ watch(() => author.value, (newValue, oldValue) => {
       "links": linksArray
     }
 
+    console.log(data);
+
     const width = 928;
-    const height = 600;
+    const height = 800;
 
     const linkColor = '#e6e6e6';
 
@@ -114,7 +135,7 @@ watch(() => author.value, (newValue, oldValue) => {
         .attr("width", width)
         .attr("height", height)
         .attr("viewBox", [0, 0, width, height])
-        .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
+        .attr("style", "max-width: 100%; height: auto; font: 13px sans-serif;");
       
       const sankey = d3Sankey()
         .nodeId(d => d.name)
@@ -123,27 +144,37 @@ watch(() => author.value, (newValue, oldValue) => {
         .nodePadding(10)
         .extent([[1, 5], [width - 1, height - 5]]);
 
-      const {nodes, links} = sankey({
+      let {nodes, links} = sankey({
         nodes: data.nodes.map(d => Object.assign({}, d)),
         links: data.links.map(d => Object.assign({}, d))
       });
         
       // Defines a color scale.
       const customColors = [
-        '#d9d1b8', '#401f13', '#736355'
+        '#736355', // other color
+        '#d9d1b8', // color light beige
+        '#401f13' // color dark 
+        
       ];
       const color = d3.scaleOrdinal(customColors);
 
+      console.log('nodes' , nodes)
+
+      nodes = nodes.sort(d => d.category);
       const rect = svg.append("g")
-      .attr("stroke", "#fff")
-      .attr("stroke-opacity", 0)
         .selectAll()
         .data(nodes)
         .join("rect")
+          .attr("id", d => `node-id-${d.index}`)
           .attr("x", d => d.x0)
           .attr("y", d => d.y0)
           .attr("height", d => d.y1 - d.y0)
           .attr("width", d => d.x1 - d.x0)
+          .attr("opacity", 1)
+          .attr("stroke-width", 2)
+          .attr("stroke", "#000")
+          .attr("stroke-opacity", 0)
+          .attr("class", "node-rect")
           .attr("fill", d => color(d.category));
 
       // Adds a title on the nodes.
@@ -153,7 +184,7 @@ watch(() => author.value, (newValue, oldValue) => {
       // Creates the paths that represent the links.
       const link = svg.append("g")
           .attr("fill", "none")
-          .attr("stroke-opacity", 0.5)
+          .attr("stroke-opacity", 0.9)
         .selectAll()
         .data(links)
         .join("g")
@@ -163,7 +194,7 @@ watch(() => author.value, (newValue, oldValue) => {
         .attr("d", sankeyLinkHorizontal())
         .attr("class", "paths cursor-pointer")
         .attr("stroke", linkColor)
-        .attr("stroke-width", d => Math.max(1, d.width))
+        .attr("stroke-width", d => Math.max(3, d.width))
         .on("click", click)
         .on("mouseout", mouseout)
         .on("mouseover", mouseover);
@@ -176,22 +207,52 @@ watch(() => author.value, (newValue, oldValue) => {
         .selectAll()
         .data(nodes)
         .join("text")
+          .attr("class", "text-label")
+          .attr("id", d => `text-id-${d.index}`)
           .attr("x", d => d.x0 < width / 2 ? d.x1 + 6 : d.x0 - 6)
           .attr("y", d => (d.y1 + d.y0) / 2)
           .attr("dy", "0.35em")
           .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
           .text(d => d.name);
 
-      function mouseover(event) {
+      function mouseover(event, t) {
         d3.select(event.target).attr("stroke", "#555")
+        d3.select(`#text-id-${t.source.index}`).attr("font-weight", "bold")
+        d3.select(`#text-id-${t.target.index}`).attr("font-weight", "bold")
+
+        d3.selectAll(".node-rect").attr("opacity", 0.2)
+        d3.select(`#node-id-${t.source.index}`).attr("opacity", 1).attr("stroke-opacity", 1)
+        d3.select(`#node-id-${t.target.index}`).attr("opacity", 1).attr("stroke-opacity", 1)
+
+        console.log(event, t, `#text-id-${t.index}`)
       }
 
       function mouseout() {
         d3.selectAll(".paths").attr("stroke", linkColor)
+        d3.selectAll(".text-label").attr("font-weight", "regular")
+        d3.selectAll(".node-rect").attr("opacity", 1).attr("stroke-opacity", 0)
+
       }
 
       function click(event, el) {
-        popupDescription.value = "WIP"
+
+        console.log('ev', event, el)
+        const author = el.source.name
+        const city = el.target.name
+        const meetings = el.meetings
+
+        popupTitle.value = `
+          ${meetings.length} Meetings with ${author} in ${city}
+        `
+
+        popupDescription.value = ''
+        for ( let i=0 ; i<meetings.length; i++) {
+          popupDescription.value += `
+            ${meetings[i].dateStart} — ${meetings[i].dateEnd}
+            <br><br>
+          `
+        }
+
         popupVisible.value = true
       }
 

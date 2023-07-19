@@ -42,6 +42,8 @@ const specIcon = ref();
 
 function generateMarker(dataset, L, map, target) {
 
+  
+
   if (markers.value != undefined) {
     map.removeLayer(markers.value);
 
@@ -55,10 +57,13 @@ function generateMarker(dataset, L, map, target) {
         opacity: 0
       },
       iconCreateFunction: function(cluster) {
+
+        const radius = Math.max(30, Math.min(7 * cluster.getChildCount(), 100));
+        
         return L.divIcon({ 
           html: cluster.getChildCount(),
           className: 'mycluster',
-          iconSize: L.point(35, 35)
+          iconSize: L.point(radius, radius)
         });
       }
     });
@@ -92,12 +97,13 @@ function generateMarker(dataset, L, map, target) {
 
         notes += `
           <div class='border-b border-dotted border-gray-600 pb-1 pt-4 px-2'>
-            <span class='font-bold'>${location.dateStart[j]}:</span> ${location.notes[j]}
+            <span class='font-bold'>${location.dateStart[j]} — ${location.dateEnd[j]}:</span> ${location.notes[j]}
             <br><br>
             <span class='font-bold'>Agent:</span> ${agentString}<br>
             <span class='font-bold'>Recipient:</span> ${recipientString}
             <br><br>
-            <span class='font-bold'>Source:</span> ${location.source[j].split('_')[0]}
+            <span class='font-bold'>Source:</span> <span class='italic'>${location.source[j].split('_')[0].split('by')[0]}</span> by <span>${location.source[j].split('_')[0].split('by')[1]}</span>
+            (p. ${location.page[j]})
           </div>
         `
       }
@@ -157,10 +163,14 @@ onMounted(() => {
       opacity: 0
     },
     iconCreateFunction: function(cluster) {
+
+      const radius = Math.max(30, Math.min(7 * cluster.getChildCount(), 100));
+
       return L.divIcon({ 
         html: cluster.getChildCount(),
         className: 'mycluster',
-        iconSize: L.point(35, 35)
+        style: "{ 'background-color': 'red'}",
+        iconSize: L.point(radius, radius)
       });
     }
   });
@@ -176,9 +186,3 @@ watch(() => letterType.value, (newValue, oldValue) => {
   } 
 })
 </script>
-
-<style scoped>
-#map { 
-  height: 600px; 
-}
-</style>

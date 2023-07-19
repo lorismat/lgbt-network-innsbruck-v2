@@ -134,12 +134,6 @@ watch(() => author.value, (newValue, oldValue) => {
     const width = 928;
     const linkColor = '#e6e6e6';
 
-    // Defines a color scale.
-    const customColors = [
-        '#d9d1b8', '#401f13', '#736355'
-      ];
-    const color = d3.scaleOrdinal(customColors);
-
     // svg cleaning
     d3.select("#directed").selectAll("*").remove();
 
@@ -148,7 +142,7 @@ watch(() => author.value, (newValue, oldValue) => {
       // The force simulation mutates links and nodes, so create a copy
       // so that re-evaluating this cell produces the same result.
       const links = data.links.map(d => ({...d}));
-      const nodes = data.nodes.map(d => ({...d}));
+      let nodes = data.nodes.map(d => ({...d}));
 
       // Create a simulation with several forces.
       const simulation = d3.forceSimulation(nodes)
@@ -168,12 +162,12 @@ watch(() => author.value, (newValue, oldValue) => {
       // Add a line for each link, and a circle for each node.
       const link = svg.append("g")
           .attr("stroke", linkColor)
-          .attr("stroke-opacity", 0.6)
+          .attr("stroke-opacity", 0.7)
         .selectAll()
         .data(links)
         .join("line")
           .attr("class", "paths cursor-pointer")
-          .attr("stroke-width", d => Math.sqrt(d.value * 3))
+          .attr("stroke-width", d => Math.max(4, Math.sqrt(d.value * 3)))
           .on("click", click)
           .on("mouseout", mouseout)
           .on("mouseover", mouseover);
@@ -187,7 +181,7 @@ watch(() => author.value, (newValue, oldValue) => {
 
       const circle = node.append("circle")
           .attr("r", 10)
-          .attr("fill", d => color(d.group));
+          .attr("fill", d => d.group == 1 ? "#401f13" : "#d9d1b8"); // '#d9d1b8', '#401f13', '#736355'
 
       const text = node.append("text")
         .attr('text-anchor', 'middle')
@@ -235,7 +229,7 @@ watch(() => author.value, (newValue, oldValue) => {
 
     } else {
       const message = `
-        <div>No meetings/publications registered for ${author.value}</div>
+        <div>No meetings/material exchanges registered for ${author.value}</div>
       `
       d3.select("#directed").html(message)
     }
