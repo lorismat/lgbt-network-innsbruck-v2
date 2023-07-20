@@ -2,6 +2,7 @@
   <HeaderViz />
   <Tooltip 
     :description="popupDescription"
+    :title="popupTitle"
   />
   <BaseContent 
     title="Force-Directed Graph of Author Meetings and Material Exchanges"
@@ -43,6 +44,7 @@ const peopleDataset = useState('peopleDataset')
 const directedMeetings = useState('directedMeetings')
 
 const popupDescription = ref('')
+const popupTitle = ref('')
 const popupVisible = useState('popupVisible', () => false)
 
 watch(() => author.value, (newValue, oldValue) => {
@@ -85,11 +87,27 @@ watch(() => author.value, (newValue, oldValue) => {
             if (e.id != filteredMeetings[i].participants[j]) {
               if (linksArray.filter(it => it.source === e.id && it.target === filteredMeetings[i].participants[j]).length > 0) {
                 linksArray.filter(it => it.source === e.id && it.target === filteredMeetings[i].participants[j])[0].value += 1;
+                linksArray.filter(it => it.source === e.id && it.target === filteredMeetings[i].participants[j])[0].meetings.push({
+                  "dateStart": filteredMeetings[i].dateStart,
+                  "dateEnd": filteredMeetings[i].dateEnd,
+                  "notes": filteredMeetings[i].notes,
+                  "source": filteredMeetings[i].source,
+                  "page": filteredMeetings[i].page,
+                  "participants": filteredMeetings[i].participants
+                })
               } else {
                 linksArray.push({
                   "source": e.id,
                   "target": filteredMeetings[i].participants[j],
-                  "value": 1
+                  "value": 1,
+                  "meetings": [{
+                    "dateStart": filteredMeetings[i].dateStart,
+                    "dateEnd": filteredMeetings[i].dateEnd,
+                    "notes": filteredMeetings[i].notes,
+                    "source": filteredMeetings[i].source,
+                    "page": filteredMeetings[i].page,
+                    "participants": filteredMeetings[i].participants
+                  }]
                 })
               }
             }
@@ -223,7 +241,41 @@ watch(() => author.value, (newValue, oldValue) => {
       }
 
       function click(event, el) {
-        popupDescription.value = "WIP"
+
+        let persons = []
+
+        if (el.source.id != author.value) {
+          persons.push(el.source.id)
+        }
+        if (el.target.id != author.value) {
+          persons.push(el.target.id)
+        }
+
+        const city = el.target.name
+        const meetings = el.meetings
+
+        popupTitle.value = `
+          ${meetings.length} Meetings involving ${persons.join(', ')}
+        `
+
+        popupDescription.value = ''
+
+        for ( let i=0 ; i<meetings.length; i++) {
+          popupDescription.value += `
+            <div class="pb-2 my-2 border-b border-dashed border-gray-500 text-sm">
+              <div class="py-2">
+                <span class='font-sans font-bold'>${meetings[i].dateStart} — ${meetings[i].dateEnd}: </span>
+                <span class=''>${meetings[i].notes}</span>
+              </div>
+              <div><span class='font-sans font-bold'>Participants: </span>${meetings[i].participants.join(', ')}</div>
+              <div>
+                <span class='font-sans font-bold'>Source: </span>
+                (p. ${meetings[i].page})
+              </div>
+            </div>
+          `
+        }
+
         popupVisible.value = true
       }
 

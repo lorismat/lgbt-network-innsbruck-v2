@@ -74,6 +74,8 @@ function generateMarker(dataset, L, map, target) {
   for (let i = 0; i<dataset.length; i++) {
     const location = dataset[i];
 
+    console.log('location map corress', location);
+
     if (location.lat != undefined && location.lon != undefined) {
       let notes = ''
       /*
@@ -92,15 +94,33 @@ function generateMarker(dataset, L, map, target) {
 
       for (let j = 0; j<location.notes.length; j++) {
 
-        let agentString = location.agent[j]
-        let recipientString = location.recipient[j]
+        let agentName = location.agent[j]
+        let agentInfo = {
+          "dob": location.agent_dob[j],
+          "dod": location.agent_dod[j],
+          "occupation": location.agent_occupation[j],
+          "orientation": location. agent_sexual_orientation[j],
+          "nationality": location. agent_nationality[j].join('/')
+        }
+        let recipientName = location.recipient[j]
+        let recipientInfo = {
+          "dob": location.recipient_dob[j],
+          "dod": location.recipient_dod[j],
+          "occupation": location.recipient_occupation[j],
+          "orientation": location.recipient_sexual_orientation[j],
+          "nationality": location.recipient_nationality[j].join('/')
+        }
 
         notes += `
           <div class='border-b border-dotted border-gray-600 pb-1 pt-4 px-2'>
             <span class='font-bold'>${location.dateStart[j]} — ${location.dateEnd[j]}:</span> ${location.notes[j]}
             <br><br>
-            <span class='font-bold'>Agent:</span> ${agentString}<br>
-            <span class='font-bold'>Recipient:</span> ${recipientString}
+            <span class='font-bold'>Agent:</span> ${agentName} (${agentInfo.dob} — ${agentInfo.dod}) 
+            was a ${agentInfo.nationality}, ${agentInfo.orientation}, ${agentInfo.occupation.join(', ')}
+            <br>
+            <span class='font-bold'>Recipient:</span> ${recipientName} (${recipientInfo.dob} — ${recipientInfo.dod}) 
+            was a ${recipientInfo.nationality}, ${recipientInfo.orientation}, ${recipientInfo.occupation.join(', ')}
+            <br>
             <br><br>
             <span class='font-bold'>Source:</span> <span class='italic'>${location.source[j].split('_')[0].split('by')[0]}</span> by <span>${location.source[j].split('_')[0].split('by')[1]}</span>
             (p. ${location.page[j]})

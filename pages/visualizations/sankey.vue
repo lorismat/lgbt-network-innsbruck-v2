@@ -66,8 +66,6 @@ watch(() => author.value, (newValue, oldValue) => {
       return e.participants.includes(author.value);
     });
 
-    console.log(filteredMeetings)
-
     let nodesArray = []
     filteredMeetings.forEach((e, idx) => {
       nodesArray.push({
@@ -89,14 +87,17 @@ watch(() => author.value, (newValue, oldValue) => {
     let linksArray = []
     filteredMeetings.forEach((e, idx) => {
       for (let i = 0; i<e.participants.length;i++) {
-        console.log('e', e)
         if ( e.participants[i] != author.value ) { 
 
           if (linksArray.filter(it => it.source === e.participants[i] && it.target === e.city).length > 0) {
             linksArray.filter(it => it.source === e.participants[i] && it.target === e.city)[0].value += 1;
             linksArray.filter(it => it.source === e.participants[i] && it.target === e.city)[0].meetings.push({
               "dateStart": e.dateStart,
-              "dateEnd": e.dateEnd
+              "dateEnd": e.dateEnd,
+              "notes": e.notes,
+              "source": e.source,
+              "page": e.page,
+              "participants": e.participants
             })
           } else {
             linksArray.push({
@@ -105,7 +106,11 @@ watch(() => author.value, (newValue, oldValue) => {
               "value": 1,
               "meetings": [{
                 "dateStart": e.dateStart,
-                "dateEnd": e.dateEnd
+                "dateEnd": e.dateEnd,
+                "notes": e.notes,
+                "source": e.source,
+                "page": e.page,
+                "participants": e.participants
               }]
             })
           }
@@ -118,17 +123,23 @@ watch(() => author.value, (newValue, oldValue) => {
       "links": linksArray
     }
 
-    console.log(data);
-
-    const width = 928;
-    const height = 800;
-
     const linkColor = '#e6e6e6';
 
     // svg cleaning
     d3.select("#sankey").selectAll("*").remove();
 
     if (linksArray.length > 0) {
+
+      const width = 928;
+      let height = 0;
+
+      if (linksArray.length < 6) {
+        height = 200
+      } else if (linksArray.length < 12) {
+        height = 400
+      } else {
+        height = 800
+      }
 
       const svg = d3.select("#sankey")
         .append("svg")
@@ -157,8 +168,6 @@ watch(() => author.value, (newValue, oldValue) => {
         
       ];
       const color = d3.scaleOrdinal(customColors);
-
-      console.log('nodes' , nodes)
 
       nodes = nodes.sort(d => d.category);
       const rect = svg.append("g")
@@ -224,7 +233,6 @@ watch(() => author.value, (newValue, oldValue) => {
         d3.select(`#node-id-${t.source.index}`).attr("opacity", 1).attr("stroke-opacity", 1)
         d3.select(`#node-id-${t.target.index}`).attr("opacity", 1).attr("stroke-opacity", 1)
 
-        console.log(event, t, `#text-id-${t.index}`)
       }
 
       function mouseout() {
@@ -236,7 +244,6 @@ watch(() => author.value, (newValue, oldValue) => {
 
       function click(event, el) {
 
-        console.log('ev', event, el)
         const author = el.source.name
         const city = el.target.name
         const meetings = el.meetings
@@ -248,8 +255,18 @@ watch(() => author.value, (newValue, oldValue) => {
         popupDescription.value = ''
         for ( let i=0 ; i<meetings.length; i++) {
           popupDescription.value += `
-            ${meetings[i].dateStart} — ${meetings[i].dateEnd}
-            <br><br>
+            <div class="pb-2 my-2 border-b border-dashed border-gray-500 text-sm">
+              <div class="py-2">
+                <span class='font-sans font-bold'>${meetings[i].dateStart} — ${meetings[i].dateEnd}: </span>
+                <span class=''>${meetings[i].notes}</span>
+              </div>
+              <div><span class='font-sans font-bold'>Participants: </span>${meetings[i].participants.join(', ')}</div>
+              <div>
+                <span class='font-sans font-bold'>Source: </span>
+                <span class='italic'>${meetings[i].source.split('_')[0].split('by')[0]}</span> by <span>${meetings[i].source.split('_')[0].split('by')[1]}</span>
+                (p. ${meetings[i].page})
+              </div>
+            </div>
           `
         }
 

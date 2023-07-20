@@ -109,6 +109,7 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
   const groupedMeetingsAll = tMeetingsUnrollLocatedParticipants.groupby('ID_1').rollup({
       city: aq.op.max('Name'),
       source: aq.op.max('Document (evidence of meeting)'),
+      page: aq.op.max('Page number'),
       participants: aq.op.array_agg('ID'),
       dateStart: aq.op.max('Start date'),
       dateEnd: aq.op.max('End date'),
@@ -218,14 +219,32 @@ watch(() => [triggerMaterial.value], () => {
     tCorrespondenceCompleteIn = tCorrespondenceCompleteIn.join_left(tDocuments, 'Document_new')
     tCorrespondenceCompleteOut = tCorrespondenceCompleteOut.join_left(tDocuments, 'Document_new')
 
-    const peopleAgent = dataPeople.value.map(x => x.fields)
+    const peopleAgent = dataPeople.value.sort((a, b) => {
+      if ( a.fields['Nationality'] == undefined ) {
+        return 1;
+      } else {
+        return -1
+      };
+    }).map(x => x.fields)
+
     peopleAgent.forEach((people, i) => {
       people['agent_id'] = dataPeople.value[i].id
       people['agent_name'] = people['ID']
     })
     const tPeopleAgent = aq.from(peopleAgent)
 
-    const peopleRecipient = dataPeople.value.map(x => x.fields)
+    const peopleRecipient = dataPeople.value.sort((a, b) => {
+      if ( a.fields['Nationality'] == undefined ) {
+        return 1;
+      } else {
+        return -1
+      };
+    }).map(x => x.fields)
+    
+    // sorting to avoid missing nationality
+
+    //peopleRecipient
+
     peopleRecipient.forEach((people, i) => {
       people['recipient_id'] = dataPeople.value[i].id
       people['recipient_name'] = people['ID']
@@ -236,11 +255,25 @@ watch(() => [triggerMaterial.value], () => {
     tCorrespondenceCompleteIn = tCorrespondenceCompleteIn.join_left(tPeopleAgent, ['Agent_uniq','agent_id'])
     tCorrespondenceCompleteIn = tCorrespondenceCompleteIn.join_left(tPeopleRecipient, ['Recipient_uniq','recipient_id'])
 
+    console.log('table with' , tCorrespondenceCompleteIn) ;
     mapCorrespondenceDatasetIn.value = tCorrespondenceCompleteIn.groupby('createdLocIn').rollup({
       city: aq.op.max('Name'),
       source: aq.op.array_agg('ID_1'),
+
       agent: aq.op.array_agg('agent_name_1'),
+      agent_dob: aq.op.array_agg('Date of birth_1'),
+      agent_dod: aq.op.array_agg('Date of death_1'),
+      agent_occupation: aq.op.array_agg('Occupation_1'),
+      agent_sexual_orientation: aq.op.array_agg('Sexual orientation_1'),
+      agent_nationality: aq.op.array_agg('Nationality_1'),
+
       recipient: aq.op.array_agg('recipient_name'),
+      recipient_dob: aq.op.array_agg('Date of birth_2'),
+      recipient_dod: aq.op.array_agg('Date of death_2'),
+      recipient_occupation: aq.op.array_agg('Occupation_2'),
+      recipient_sexual_orientation: aq.op.array_agg('Sexual orientation_2'),
+      recipient_nationality: aq.op.array_agg('Nationality_2'),
+
       dateStart: aq.op.array_agg('Start date of activity'),
       dateEnd: aq.op.array_agg('End date of activity'),
       notes: aq.op.array_agg('Summary'),
@@ -257,10 +290,25 @@ watch(() => [triggerMaterial.value], () => {
     mapCorrespondenceDatasetOut.value = tCorrespondenceCompleteOut.groupby('createdLocOut').rollup({
       city: aq.op.max('Name'),
       source: aq.op.array_agg('ID_1'),
+
       agent: aq.op.array_agg('agent_name_1'),
+      agent_dob: aq.op.array_agg('Date of birth_1'),
+      agent_dod: aq.op.array_agg('Date of death_1'),
+      agent_occupation: aq.op.array_agg('Occupation_1'),
+      agent_sexual_orientation: aq.op.array_agg('Sexual orientation_1'),
+      agent_nationality: aq.op.array_agg('Nationality_1'),
+
       recipient: aq.op.array_agg('recipient_name'),
+      recipient_dob: aq.op.array_agg('Date of birth_2'),
+      recipient_dod: aq.op.array_agg('Date of death_2'),
+      recipient_occupation: aq.op.array_agg('Occupation_2'),
+      recipient_sexual_orientation: aq.op.array_agg('Sexual orientation_2'),
+      recipient_nationality: aq.op.array_agg('Nationality_2'),
+
       dateStart: aq.op.array_agg('Start date of activity'),
+      dateEnd: aq.op.array_agg('End date of activity'),
       notes: aq.op.array_agg('Summary'),
+      page: aq.op.array_agg('Page number'),
       count: aq.op.count(),
       lat: aq.op.mean('Latitude'),
       lon: aq.op.mean('Longitude')

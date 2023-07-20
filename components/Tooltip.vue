@@ -8,9 +8,9 @@
     </div>
     <div 
       :style="popupVisible ? { 'visibility': 'initial' } : { 'visibility': 'hidden' }"
-      class="shadow-md drop-shadow-xl align-center bg-white rounded-md border-2 border-gray-800 max-w-xl fixed w-full mx-auto div-center-screen"
+      class="overflow-scroll shadow-md drop-shadow-xl align-center bg-white rounded-md border-2 border-gray-800 max-w-xl fixed w-full mx-auto div-center-screen"
     >
-      <div class="px-8 py-4 flex justify-between items-center border-b border-gray-300">
+      <div class="sticky top-0 bg-white z-10 px-8 py-4 flex justify-between items-center border-b border-gray-300">
 
         <div>
           {{ title }}
@@ -22,7 +22,7 @@
 
       </div>
 
-      <div v-html="description" class="p-4 pb-8">
+      <div v-html="description" class="p-4 relative">
       </div>
       
     </div>
@@ -54,6 +54,7 @@ watch(() => popupVisible.value, (newValue, oldValue) => {
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 100;
+  max-height: 600px;
 }
 
 </style>
