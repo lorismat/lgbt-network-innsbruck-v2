@@ -2,6 +2,7 @@
   <HeaderViz />
   <Tooltip 
     :description="popupDescription"
+    :title="popupTitle"
   />
   <BaseContent 
     title="Timeline of Author Meetings and Material Exchanges"
@@ -75,14 +76,16 @@ const allAuthors = useState('allAuthors')
 
 
 const popupDescription = ref('')
+const popupTitle = ref('')
+
 const popupVisible = useState('popupVisible', () => false)
 
 const peopleDataset = useState('peopleDataset')
 const meetingsDatasetUnroll = useState('meetingsDatasetUnroll')
+
 const meetingsAgg = useState('meetingsAgg')
 const documentsDataset = useState('documentsDataset')
 const materialDataset = useState('materialDataset')
-
 
 watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
@@ -124,7 +127,6 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
     if (meetings[i]['dateStart'] != undefined && meetings[i]['location'] != undefined &&  meetings[i]['notes'] != undefined && selectedEvents.value.includes('Meetings')) {
       
       let participants = meetings[i]['participants'].filter(x => x != author.value);
-      console.log(participants)
 
       if (participants.length === 2) {
         participants = participants.join(' and ')
@@ -139,24 +141,33 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
           content: `Meeting with ${participants} in ${cityMeeting}`, 
           title: meetings[i]['notes'].slice(0,50), 
           start: meetings[i]['dateStart'], 
+          dateStart: meetings[i]['dateStart'],
+          dateEnd: meetings[i]['dateEnd'], 
+          participants: meetings[i]['participants'].join(', '), 
           className: 'metaClass beige',
-          description: `Meeting with ${participants} in ${cityMeeting}`,  
+          description: `Meeting with ${participants} in ${cityMeeting}`, 
+          source: meetings[i]['source'],
+          page: meetings[i]['page'],
+          notes: meetings[i]['notes'],
         }
       )
     }
   }
 
-  const documents = documentsDataset.value.filter(x => x['authorUnified'] == vals.createdPerson)
+  const documents = documentsDataset.value.filter(x => x['author'] == vals.createdPerson)
   for (let i = 0; i<documents.length; i++) {
-    if (documents[i]['Year of publication (original)'] != undefined && selectedEvents.value.includes('Publications')) {
+    console.log(documents[i])
+    if (documents[i]['pubYear'] != undefined && selectedEvents.value.includes('Publications')) {
       itemsArray.push(
         { 
           id: 'document-' + i, 
-          content: documents[i]['Title'], 
-          title: documents[i]['Title'],  // 
-          start: documents[i]['Year of publication (original)'], 
+          content: documents[i]['title'], 
+          title: documents[i]['title'],  // 
+          start: documents[i]['pubYear'], 
+          dateStart: documents[i]['pubYear'], 
           className: 'metaClass light-brown',
-          description: documents[i]['Title'],  
+          description: documents[i]['title'], 
+          notes: documents[i]['notes'], 
         }
       )
     }
@@ -171,16 +182,25 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
         content = `Letter to ${material[i]['participants']}`
       } else if (material[i]['type'] === 'Allusion') {
         content = `Allusion to ${material[i]['participants']}`
+      } else if (material[i]['type'] === 'Reading') {
+        content = `Reading of ${material[i]['document'][0]}`
+      } else if (material[i]['type'] === 'Review') {
+        content = `Review of ${material[i]['document'][0]}`
       } else {
-        content = material[i]['type'];
+        content = material[i]['type']
       }
       itemsArray.push(
         { 
           id: 'material-' + i, 
           content: content, 
           start: material[i]['dateStart'], 
+          dateStart: material[i]['dateStart'],
+          dateEnd: material[i]['dateEnd'], 
           className: 'metaClass dark-brown',
-          description: material[i]['type'],
+          description: content,
+          source: material[i]['source'],
+          page: material[i]['page'],
+          notes: material[i]['notes'],
         }
       )
     }
@@ -192,12 +212,22 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
   lowerBound = (Number(lowerBound.split('-')[0]) - 20).toString() + '-01-01';
   upperBound = (Number(upperBound.split('-')[0]) + 20).toString() + '-01-01';
 
+  // IMPORTANT NOTE
+  // Element of the "Object Dataset" have to be whitelisted below
+
   const options = {
     template: function (item, element, data) {
+      console.log(data)
       const html = `
         <div 
           id='${data.id}' 
           data-description='${data.description}'
+          data-date-start='${data.dateStart}'
+          data-date-end='${data.dateEnd}'
+          data-source='${data.source}'
+          data-page='${data.page}'
+          data-participants='${data.participants}'
+          data-notes='${data.notes}'
         >
           ${item.content}
         </div>`
@@ -207,7 +237,17 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
     xss: {
       disabled: false,
       filterOptions: {
-        whiteList: { div: ['class', 'id', 'data-description'] }
+        whiteList: { div: [
+          'class', 
+          'id', 
+          'data-description', 
+          'data-date-start', 
+          'data-date-end',
+          'data-source',
+          'data-page',
+          'data-participants',
+          'data-notes'
+        ] }
       },
     },
     tooltip: {
@@ -224,9 +264,59 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
   timeline.on("select", function (e) {
     const el = document.getElementById(e.items[0])  
+
     if (el.id != 'dob' && el.id != 'dod') {
-      popupDescription.value = el.dataset.description
+
+    const dateStart = el.dataset.dateStart;
+    let dateEnd = '';
+    let source = '';
+    let participants = '';
+    let page = '';
+    let sourceBlock = '';
+    let notes = '';
+    if (el.dataset.notes != 'undefined') {
+      notes = ": " + el.dataset.notes
+    };
+
+    if (el.id.split('-')[0] == 'meeting') { 
+      participants = `
+        <div><span class='font-sans font-bold'>Participants: </span>${el.dataset.participants}</div>
+      `
+      // 
+    }
+
+    if (el.id.split('-')[0] != 'document') {
+      dateEnd = ' — ' + el.dataset.dateEnd
+      source = el.dataset.source
+      page = el.dataset.page
+      sourceBlock = `
+          <div>
+            <span class='font-sans font-bold'>Source: </span>
+            <span class='italic'>${source.split('_')[0].split('by')[0]}</span> by <span>${source.split('_')[0].split('by')[1]}</span>
+            (p. ${page})
+          </div>
+          `
+    }
+
+      popupDescription.value = `
+        <div class="pb-2 my-2 border-b border-dashed border-gray-500 text-sm">
+          <div class="py-2">
+            <span class='font-sans font-bold'>
+              ${dateStart}${dateEnd}
+            </span><span class=''>${notes}</span>
+          </div>
+        `
+      +
+        participants
+      +
+        sourceBlock
+      +    
+        `
+          </div>
+        `
+      popupTitle.value = el.dataset.description + ` (${dateStart.split('-')[0]})` 
       popupVisible.value = true
+
     }
   });
 

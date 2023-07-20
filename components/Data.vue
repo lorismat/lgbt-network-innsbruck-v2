@@ -384,9 +384,7 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     const meetings = dataMeetings.value.map(x => x.fields)
     let tMeetings = aq.from(meetings)
     let tMeetingsUnroll = aq.from(meetings).unroll('Participants')
-
-    const documents = dataDocuments.value.map(x => x.fields)
-    let tDocuments = aq.from(documents).unroll('Author')
+    
 
     // material: create a column for people
     // column is an join array of both "Recipients if letter" and "People if Allusion"
@@ -400,20 +398,39 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
       ) {
         return 1;
       } else {
-        return 0
+        return -1
+      };
+    }).sort((a, b) => {
+      if (
+        a.fields['Document (if reading, review or allusion)'] == undefined 
+      ) {
+        return 1;
+      } else {
+        return -1
       };
     }).map(x => x.fields)
 
+    console.log(material)
+
     material.forEach((material, index) => {
-      let target = [material['People (if allusion)'], material['Recipient (if letter)']]
-      target = [...new Set(target)].filter((e) => {
-        return e !== undefined;
-      })
-      if (target.length > 0) {
-        material['target'] = target.flat()
+      material['reading'] = ''; 
+      // material['Document (if reading, review or allusion)'], 
+      if (material.Type != 'Reading' && material.Type != 'Review') {
+        let target = [material['People (if allusion)'], material['Recipient (if letter)']]
+        target = [...new Set(target)].filter((e) => {
+          return e !== undefined;
+        })
+        if (target.length > 0) {
+          material['target'] = target.flat()
+        } else {
+          material['target'] = ''
+        }
       } else {
-        material['target'] = ''
-      }
+        if (material['Document (if reading, review or allusion)'] != undefined) {
+          material['reading'] = material['Document (if reading, review or allusion)']; 
+          material['target'] = ''
+        }
+      } 
     })
 
     material.forEach((material, index) => {
@@ -432,24 +449,27 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     tMaterial = tMaterial.groupby('Material Exchange ID').rollup({
       type: aq.op.max('Type'),
       source: aq.op.max('Document'),
+      page: aq.op.max('Page number'),
       participants: aq.op.array_agg('ID_1'),
       dateStart: aq.op.max('Start date of activity'),
+      dateEnd: aq.op.max('End date of activity'),
       notes: aq.op.max('Summary'),
-      agent: aq.op.max('Agent')
+      agent: aq.op.max('Agent'),
+      document: aq.op.max('reading'),
     });
 
     tMaterial = tMaterial.derive({ authorUnified: d => d['agent'] }).objects();
     materialDataset.value = tMaterial;
 
+    console.log('tmat', tMaterial)
+
 
     tMeetings = tMeetings.derive({ authorUnified: d => d['Participants'] })
     tMeetingsUnroll = tMeetingsUnroll.derive({ authorUnified: d => d['Participants'] })
 
-    tDocuments = tDocuments.derive({ authorUnified: d => d['Author'] })
-    
+       
 
     meetingsDataset.value = tMeetings.objects()
-
     let fullMeetings = tMeetingsUnroll.join_left(tPeople, ['Participants', 'createdPerson'])
 
     const tLoc = aq.from(locations);
@@ -460,11 +480,38 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
       participants: aq.op.max('ID (from Participants)'),
       source: aq.op.max('Document (evidence of meeting)'),
       dateStart: aq.op.max('Start date'),
+      dateEnd: aq.op.max('End date'),
       notes: aq.op.max('Summary'),
       location: aq.op.max('Name'),
+      page: aq.op.max('Page number')
     }).objects();
+
+    console.log('meet val', meetingsAgg.value)
     
-    documentsDataset.value = tDocuments.objects()
+    // documents
+
+    const documents = dataDocuments.value.sort((a, b) => {
+      if ( a.fields['Description'] == undefined ) {
+        return 1;
+      } else {
+        return -1
+      };
+    }).map(x => x.fields);
+
+    let tDocuments = aq.from(documents).unroll('Author')
+    tDocuments = tDocuments.derive({ authorUnified: d => d['Author'] }) 
+
+    console.log(tDocuments)
+    // sort to get description
+
+    documentsDataset.value = tDocuments.groupby('ID').rollup({ 
+      author: aq.op.max('authorUnified'),
+      title: aq.op.max('Title'),
+      pubYear: aq.op.max('Year of publication (original)'),
+      notes: aq.op.max('Description'),
+    }).objects();
+
+    console.log(documentsDataset.value)
     
   }
 })
