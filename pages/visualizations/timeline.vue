@@ -154,9 +154,9 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
     }
   }
 
+  // publication
   const documents = documentsDataset.value.filter(x => x['author'] == vals.createdPerson)
   for (let i = 0; i<documents.length; i++) {
-    console.log(documents[i])
     if (documents[i]['pubYear'] != undefined && selectedEvents.value.includes('Publications')) {
       itemsArray.push(
         { 
@@ -168,6 +168,7 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
           className: 'metaClass light-brown',
           description: documents[i]['title'], 
           notes: documents[i]['notes'], 
+          pub: documents[i]['pub'], 
         }
       )
     }
@@ -178,14 +179,19 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
     if (material[i]['dateStart'] != undefined && selectedEvents.value.includes('Material Exchanges')) {
       
       let content = '';
+
       if (material[i]['type'] === 'Letter') {
         content = `Letter to ${material[i]['participants']}`
-      } else if (material[i]['type'] === 'Allusion') {
-        content = `Allusion to ${material[i]['participants']}`
+      } else if (material[i]['type'] === 'Allusion' && material[i]['document'] != undefined && material[i]['participants'].length === 0) {
+        content = `Allusion to ${material[i]['document'].split(':')[0].split('by')[0]}`
+      } else if (material[i]['type'] === 'Viewing' && material[i]['document'] != undefined && material[i]['participants'].length === 0) {
+        content = `Viewing of ${material[i]['document'].split(':')[0].split('by')[0]}`
+      } else if (material[i]['type'] === 'Allusion' && material[i]['participants'].length > 0) {
+        content = `Allusion to ${material[i]['participants'].join(', ')}`
       } else if (material[i]['type'] === 'Reading') {
-        content = `Reading of ${material[i]['document'][0]}`
+        content = `Reading of ${material[i]['document'].split(':')[0].split('by')[0]}`
       } else if (material[i]['type'] === 'Review') {
-        content = `Review of ${material[i]['document'][0]}`
+        content = `Review of ${material[i]['document'].split(':')[0].split('by')[0]}` // ${material[i]['document'][0]
       } else {
         content = material[i]['type']
       }
@@ -217,7 +223,6 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
   const options = {
     template: function (item, element, data) {
-      console.log(data)
       const html = `
         <div 
           id='${data.id}' 
@@ -228,6 +233,7 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
           data-page='${data.page}'
           data-participants='${data.participants}'
           data-notes='${data.notes}'
+          data-pub='${data.pub}'
         >
           ${item.content}
         </div>`
@@ -246,7 +252,8 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
           'data-source',
           'data-page',
           'data-participants',
-          'data-notes'
+          'data-notes',
+          'data-pub'
         ] }
       },
     },
@@ -269,11 +276,15 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
     const dateStart = el.dataset.dateStart;
     let dateEnd = '';
+
     let source = '';
     let participants = '';
     let page = '';
     let sourceBlock = '';
     let notes = '';
+    let publication = '';
+    let main = '';
+
     if (el.dataset.notes != 'undefined') {
       notes = ": " + el.dataset.notes
     };
@@ -286,7 +297,12 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
     }
 
     if (el.id.split('-')[0] != 'document') {
-      dateEnd = ' — ' + el.dataset.dateEnd
+      if (el.dataset.dateEnd != 'undefined') {
+        dateEnd = ' — ' + el.dataset.dateEnd
+      } else {
+        dateEnd = ' — ?'
+      }
+      
       source = el.dataset.source
       page = el.dataset.page
       sourceBlock = `
@@ -296,9 +312,8 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
             (p. ${page})
           </div>
           `
-    }
 
-      popupDescription.value = `
+      main = `
         <div class="pb-2 my-2 border-b border-dashed border-gray-500 text-sm">
           <div class="py-2">
             <span class='font-sans font-bold'>
@@ -306,6 +321,24 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
             </span><span class=''>${notes}</span>
           </div>
         `
+    } else {
+      let publisher = '?'
+      if (el.dataset.pub != 'undefined') {
+        publisher = el.dataset.pub
+      }
+      publication = `
+          <div>
+            <span class='font-sans'>Published by </span>
+            <span class='italic'>${publisher}</span>
+            in <span class='font-bold'>${dateStart}</span>
+          </div>
+      `
+    }
+
+      popupDescription.value = 
+        publication 
+      +
+        main
       +
         participants
       +
