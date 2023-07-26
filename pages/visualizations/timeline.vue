@@ -74,7 +74,6 @@ const author = ref('')
 const authorInfo = ref('')
 const allAuthors = useState('allAuthors')
 
-
 const popupDescription = ref('')
 const popupTitle = ref('')
 

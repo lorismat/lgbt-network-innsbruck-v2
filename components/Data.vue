@@ -28,12 +28,11 @@ const mapCorrespondenceDatasetOut = useState('mapCorrespondenceDatasetOut', () =
 const peopleDataset = useState('peopleDataset', () => [])
 const sankeyMeetings = useState('sankeyMeetings', () => [])
 const directedMeetings = useState('directedMeetings', () => [])
+const directedMaterial = useState('directedMaterial', () => [])
 
 // allAuthors for dropdown select
 const allAuthors = useState('allAuthors', () => [])
 
-// temp dataset
-const tempDataset = useState('tempDataset', () => [])
 const meetingsDataset = useState('meetingsDataset', () => [])
 
 const meetingsAgg = useState('meetingsAgg', () => [])
@@ -63,14 +62,8 @@ onMounted(() => {
   iterCalls(iterator, appConfig.atTablePeople, offsetPeople, dataPeople, triggerPeople)
 })
 
-// sankey + directed
-watch(() => [triggerLocations.value, triggerMeetings.value], () => {
-  const tempTableLinks = aq.table({ source: ['a', 'a', 'a', 'b', 'b', 'c'], target: ['london', 'paris', 'ny', 'london', 'paris', 'ny'], value: [124, 26, 100, 280, 81, 10] })
-  const tempTableNodes = aq.table({ name: ['a', 'b', 'c', 'london', 'paris', 'ny'], category: ['aut', 'aut', 'aut', 'city', 'city', 'city'] })
-  tempDataset.value = {
-    'nodes': tempTableNodes.objects(),
-    'links': tempTableLinks.objects()
-  }
+// sankey + directed meetings + directed material
+watch(() => [triggerLocations.value, triggerMeetings.value, triggerMaterial.value], () => {
 
   // process: 
   // get the meeting table
@@ -84,12 +77,17 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
   const meetings = dataMeetings.value.map(x => x.fields)
   const locations = dataLocations.value.map(x => x.fields)
   const people = dataPeople.value.map(x => x.fields)
+  const material = dataMaterial.value.map(x => x.fields)
+  const docs = dataDocuments.value.map(x => x.fields)
 
   locations.forEach((location, i) => {
     location['createdLoc'] = dataLocations.value[i].id
   })
   people.forEach((people, i) => {
     people['participant_rec'] = dataPeople.value[i].id
+  })
+  docs.forEach((doc, i) => {
+    doc['source'] = dataDocuments.value[i].id
   })
   meetings.forEach((meeting, index) => {
     if (meeting['Location'] != undefined) {
@@ -98,12 +96,32 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
     }
   })
 
+  material.forEach((material, i) => {
+    if (material['Agent'] != undefined) {
+      material['participant_rec'] = [material['Agent'][0]]
+      if (material['People (if allusion)'] != undefined) {
+        material['participant_rec'].push(material['People (if allusion)'][0])
+      }
+      if (material['Recipient (if letter)'] != undefined) {
+        material['participant_rec'].push(material['Recipient (if letter)'][0])
+      }
+      material['source'] = material['Document'][0]
+    }
+  })
+
+  // processed in the timeline call, changing material value
+  const tMaterial = aq.from(material)
   const tLocations = aq.from(locations)
   const tPeople = aq.from(people)
+  const tDocs = aq.from(docs)
+  
   let tMeetingsUnroll = aq.from(meetings).unroll('participant_rec')
+  let tMaterialUnroll = tMaterial.unroll('participant_rec')
 
   const tMeetingsUnrollLocated = tMeetingsUnroll.join(tLocations, 'createdLoc')
   const tMeetingsUnrollLocatedParticipants = tMeetingsUnrollLocated.join(tPeople, 'participant_rec')
+  let tMaterialUnrollParticipants = tMaterialUnroll.join(tPeople, 'participant_rec')
+  tMaterialUnrollParticipants = tMaterialUnrollParticipants.join_left(tDocs, ['source', 'source'], [aq.all(), ['ID']], { 'suffix': ['_source', '_source_2'] })
 
   // ID_1 is the meeting ID
   const groupedMeetingsAll = tMeetingsUnrollLocatedParticipants.groupby('ID_1').rollup({
@@ -116,9 +134,19 @@ watch(() => [triggerLocations.value, triggerMeetings.value], () => {
       notes: aq.op.max('Summary'),
     }).objects();
 
+  const groupedMaterialAll = tMaterialUnrollParticipants.groupby('Material Exchange ID').rollup({
+    //city: '',
+    source: aq.op.max('ID_source_2'),
+    page: aq.op.max('Page number'),
+    participants: aq.op.array_agg('ID_source'),
+    dateStart: aq.op.max('Start date of activity'),
+    dateEnd: aq.op.max('End date of activity'),
+    notes: aq.op.max('Summary'),
+  }).filter(d => d.participants.length > 1).objects();    
+
   sankeyMeetings.value = groupedMeetingsAll;
   directedMeetings.value = groupedMeetingsAll;
-
+  directedMaterial.value = groupedMaterialAll;
 })
 
 // mapMeetingsDataset
@@ -461,16 +489,13 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
       doc['Source_full'] = doc['ID']
     })
 
+    
     let tDocuments = aq.from(documents).unroll('Author')
     tDocuments = tDocuments.derive({ authorUnified: d => d['Author'] })
     
-    console.log('tmaterial', tMaterial)
-
     // todo: join data to get reading documents
     tMaterial = tMaterial.join_left(tDocuments, ['reading', 'createdDocID'], [aq.all(), aq.all()], { 'suffix': ['_r', '_r2'] })
     tMaterial = tMaterial.join_left(tDocuments, ['docId', 'createdDocID'], [aq.all(), ['Source_full']], { 'suffix': ['_doc', '_doc2'] })
-
-    console.log('tmaterial', tMaterial)
 
     // group back
     tMaterial = tMaterial.groupby('Material Exchange ID').rollup({
