@@ -411,7 +411,6 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     let tMeetings = aq.from(meetings)
     let tMeetingsUnroll = aq.from(meetings).unroll('Participants')
     
-
     // material: create a column for people
     // column is an join array of both "Recipients if letter" and "People if Allusion"
     const material = dataMaterial.value.sort((a, b) => {
@@ -473,7 +472,6 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     // join with people table
     tMaterial = tMaterial.join_left(tPeopleComplete, ['target', 'createdPerson'])
     
-    
     // tDocuments
     // documents
     const documents = dataDocuments.value.sort((a, b) => {
@@ -489,9 +487,8 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
       doc['Source_full'] = doc['ID']
     })
 
-    
-    let tDocuments = aq.from(documents).unroll('Author')
-    tDocuments = tDocuments.derive({ authorUnified: d => d['Author'] })
+    let tDocuments = aq.from(documents).unroll('Author or editor')
+    tDocuments = tDocuments.derive({ authorUnified: d => d['Author or editor'] })
     
     // todo: join data to get reading documents
     tMaterial = tMaterial.join_left(tDocuments, ['reading', 'createdDocID'], [aq.all(), aq.all()], { 'suffix': ['_r', '_r2'] })
@@ -514,9 +511,7 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     
     materialDataset.value = tMaterial;
 
-    
     // source info is missing, join required
-
     tMeetings = tMeetings.derive({ authorUnified: d => d['Participants'] })
     tMeetingsUnroll = tMeetingsUnroll.derive({ authorUnified: d => d['Participants'] })
 

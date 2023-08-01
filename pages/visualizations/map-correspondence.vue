@@ -73,8 +73,6 @@ function generateMarker(dataset, L, map, target) {
   for (let i = 0; i<dataset.length; i++) {
     const location = dataset[i];
 
-    console.log('location map corress', location);
-
     if (location.lat != undefined && location.lon != undefined) {
       let notes = ''
       /*

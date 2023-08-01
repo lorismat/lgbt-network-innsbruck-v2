@@ -94,7 +94,6 @@ onMounted(() => {
 
   for (let i = 0; i<mapMeetingsDataset.value.length; i++) {
     const location = mapMeetingsDataset.value[i];
-    console.log(location);
     if (location.lat != undefined && location.lon != undefined) {
       let notes = ''
       let participantString = []
