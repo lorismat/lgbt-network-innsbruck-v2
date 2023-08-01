@@ -6,7 +6,6 @@
     part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
   />
   <div class="pb-12 pt-6">
-    <div class="text-red-600 capitalize py-4">not finished</div>
     <FormKit
       v-model="letterType"
       type="radio"
@@ -111,6 +110,13 @@ function generateMarker(dataset, L, map, target) {
           "nationality": location.recipient_nationality[j].join('/')
         }
 
+        let page = location.page[j];
+        if (page.includes('-')) {
+          page = 'pp. ' + page
+        } else {
+          page = 'p. ' + page
+        }
+
         notes += `
           <div class='border-b border-dotted border-gray-600 pb-1 pt-4 px-2'>
             <span class='font-bold'>${location.dateStart[j]} — ${location.dateEnd[j]}:</span> ${location.notes[j]}
@@ -123,7 +129,7 @@ function generateMarker(dataset, L, map, target) {
             <br>
             <br><br>
             <span class='font-bold'>Source:</span> <span class='italic'>${location.source[j].split('_')[0].split('by')[0]}</span> by <span>${location.source[j].split('_')[0].split('by')[1]}</span>
-            (p. ${location.page[j]})
+            (${page})
           </div>
         `
       }

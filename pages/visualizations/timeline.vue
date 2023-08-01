@@ -301,14 +301,20 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
       } else {
         dateEnd = ' — ?'
       }
+
+      let page = el.dataset.page
+      if (page.includes('-')) {
+        page = 'pp. ' + page
+      } else {
+        page = 'p. ' + page
+      }
       
       source = el.dataset.source
-      page = el.dataset.page
       sourceBlock = `
           <div>
             <span class='font-sans font-bold'>Source: </span>
             <span class='italic'>${source.split('_')[0].split('by')[0]}</span> by <span>${source.split('_')[0].split('by')[1]}</span>
-            (p. ${page})
+            (${page})
           </div>
           `
 

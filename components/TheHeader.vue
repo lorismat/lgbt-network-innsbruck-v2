@@ -6,7 +6,7 @@
       </div>
       <ul class="flex gap-12">
         <li><NuxtLink :class="classAlt" to="/visualizations/sankey">Visualizations</NuxtLink></li>
-        <li><NuxtLink :class="classDiff" to="/enhancement">Enhancement</NuxtLink></li>
+        <li><NuxtLink :class="classBase" to="/enhancement">Enhancement</NuxtLink></li>
         <li><NuxtLink :class="classBase" :activeClass="classActive" to="/about">About</NuxtLink></li>
         <li><NuxtLink :class="classBase" :activeClass="classActive" to="/contact">Contact</NuxtLink></li>
       </ul>

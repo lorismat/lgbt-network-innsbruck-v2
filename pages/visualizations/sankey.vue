@@ -254,6 +254,15 @@ watch(() => author.value, (newValue, oldValue) => {
 
         popupDescription.value = ''
         for ( let i=0 ; i<meetings.length; i++) {
+
+          let page = meetings[i].page
+          if (page.includes('-')) {
+            page = 'pp. ' + page
+          } else {
+            page = 'p. ' + page
+          }
+
+
           popupDescription.value += `
             <div class="pb-2 my-2 border-b border-dashed border-gray-500 text-sm">
               <div class="py-2">
@@ -264,7 +273,7 @@ watch(() => author.value, (newValue, oldValue) => {
               <div>
                 <span class='font-sans font-bold'>Source: </span>
                 <span class='italic'>${meetings[i].source.split('_')[0].split('by')[0]}</span> by <span>${meetings[i].source.split('_')[0].split('by')[1]}</span>
-                (p. ${meetings[i].page})
+                (${page})
               </div>
             </div>
           `

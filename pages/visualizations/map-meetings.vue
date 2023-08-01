@@ -105,16 +105,24 @@ onMounted(() => {
           if (participantInfo != undefined) {
             participantStringEl += '• ' + participantInfo.ID_1 + 
             ` (${participantInfo['Date of birth']} — ${participantInfo['Date of death']})` + 
-            `<br>${participantInfo['Nationality'] != undefined ? participantInfo['Nationality'][0] : ''}; ` + 
+            ` was a ${participantInfo['Nationality'] != undefined ? participantInfo['Nationality'][0] : ''}, ` + 
+            `<span class=''>${participantInfo['Sexual orientation']}</span>, ` +
             `${participantInfo['Occupation'] != undefined ? participantInfo['Occupation'].join(', ') : ''}` +
-            `. <span class=''>${participantInfo['Sexual orientation']}</span><br>`
-            '<br><br>'
+            '<br>'
           }
         }
         participantString.push(participantStringEl)
       }
 
       for (let j = 0; j<location.notes.length; j++) {
+
+        let page = location.page[j];
+        if (page.includes('-')) {
+          page = 'pp. ' + page
+        } else {
+          page = 'p. ' + page
+        }
+
         notes += `
           <div class='border-b border-dotted border-gray-600 pb-1 pt-4 px-2'>
             <span class='font-bold'>${location.dateStart[j]} — ${location.dateEnd[j]}:</span> ${location.notes[j]}
@@ -122,7 +130,7 @@ onMounted(() => {
             ${participantString[j]}
             <br><br>
             <span class='font-bold'>Source:</span> <span class='italic'>${location.source[j].split('_')[0].split('by')[0]}</span> by <span>${location.source[j].split('_')[0].split('by')[1]}</span>
-            (p. ${location.page[j]})
+            (${page})
           </div>
         `
       }
