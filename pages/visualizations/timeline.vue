@@ -195,7 +195,6 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
   const material = materialDataset.value.filter(x => x['authorUnified'] == vals.createdPerson)
   for (let i = 0; i<material.length; i++) {
 
-    console.log('mat notes', material[i]['notes'])
 
     if (material[i]['dateStart'] != undefined && selectedEvents.value.includes('Material Exchanges')) {
       
@@ -244,7 +243,6 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
   const options = {
     template: function (item, element, data) {
-
       let content;
       if (data.id.split('-')[0] === 'document') {
         content = `<span class='italic'>` + item.content + `</span>`
@@ -257,7 +255,13 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
       } else {
         content = item.content;
       }
-      console.log('data notes', data.notes);
+
+      console.log(data.notes, typeof(data.notes))
+
+      if (data.notes != undefined) {
+        data.notes = data.notes.replaceAll(/["]/g, "\'")
+      }
+
       const html = `
         <div 
           id='${data.id}' 
@@ -324,8 +328,6 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
     let notes = '';
     let publication = '';
     let main = '';
-
-    console.log('ds notes', el.dataset);
 
     if (el.dataset.notes != 'undefined') {
       

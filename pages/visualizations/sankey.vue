@@ -265,8 +265,12 @@ watch(() => author.value, (newValue, oldValue) => {
         const city = el.target.name
         const meetings = el.meetings
 
+        let meetingString = "Meeting";
+        if (meetings.length>1) {
+          meetingString = "Meetings"
+        }
         popupTitle.value = `
-          ${meetings.length} Meetings with ${author} in ${city}
+          ${meetings.length} ${meetingString} with ${author} in ${city}
         `
 
         popupDescription.value = ''
