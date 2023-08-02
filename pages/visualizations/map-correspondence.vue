@@ -5,6 +5,9 @@
     part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
     part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
   />
+
+  <BaseLoader :displayLoader="displayLoader" padding="py-6" />
+
   <div class="pb-12 pt-6">
     <FormKit
       v-model="letterType"
@@ -27,11 +30,24 @@
 </template>
 
 <script setup>
+
+/* LOADER */
+const allAuthors = useState('allAuthors')
+const displayLoader = ref('block')
+watch(() => allAuthors.value, (newValue, oldValue) => {
+  displayLoader.value = 'none';
+  generateMarker(mapCorrespondenceDatasetIn.value, L, map, 'from')
+})
+onMounted(() => {
+  if (allAuthors.value.length > 0) {
+    displayLoader.value = 'none';
+  }
+})
+
 const appConfig = useAppConfig()
 
 const mapCorrespondenceDatasetIn = useState('mapCorrespondenceDatasetIn')
 const mapCorrespondenceDatasetOut = useState('mapCorrespondenceDatasetOut')
-const peopleDataset = useState('peopleDataset')
 
 const letterType = ref('from')
 
@@ -40,8 +56,6 @@ const markers = ref();
 const specIcon = ref();
 
 function generateMarker(dataset, L, map, target) {
-
-  
 
   if (markers.value != undefined) {
     map.removeLayer(markers.value);
@@ -56,9 +70,7 @@ function generateMarker(dataset, L, map, target) {
         opacity: 0
       },
       iconCreateFunction: function(cluster) {
-
         const radius = Math.max(30, Math.min(7 * cluster.getChildCount(), 100));
-        
         return L.divIcon({ 
           html: cluster.getChildCount(),
           className: 'mycluster',
@@ -66,31 +78,13 @@ function generateMarker(dataset, L, map, target) {
         });
       }
     });
-
-    //markers.value = ;
   }
 
   for (let i = 0; i<dataset.length; i++) {
     const location = dataset[i];
-
     if (location.lat != undefined && location.lon != undefined) {
       let notes = ''
-      /*
-      const agentInfo = peopleDataset.value.filter(x => x['ID'] == location.agent)[0]
-      let agentString = `<span class='font-bold'>Agent:</span>${agentInfo.ID}<br>`
-      */
-      /*
-      const participantInfo = peopleDataset.value.filter(x => x['ID'] == location.participants[j])[0]
-      participantString += '• ' + participantInfo.ID + 
-        ` (${participantInfo['Date of birth']} — ${participantInfo['Date of death']})` + 
-        `<br>${participantInfo['Nationality'] != undefined ? participantInfo['Nationality'][0] : ''}; ` + 
-        `${participantInfo['Occupation'] != undefined ? participantInfo['Occupation'].join(', ') : ''}` +
-        `. <span class=''>${participantInfo['Sexual orientation']}</span><br>`
-        '<br><br>'
-      */
-
       for (let j = 0; j<location.notes.length; j++) {
-
         let agentName = location.agent[j]
         let agentInfo = {
           "dob": location.agent_dob[j],
@@ -107,14 +101,12 @@ function generateMarker(dataset, L, map, target) {
           "orientation": location.recipient_sexual_orientation[j],
           "nationality": location.recipient_nationality[j].join('/')
         }
-
         let page = location.page[j];
         if (page.includes('-')) {
           page = 'pp. ' + page
         } else {
           page = 'p. ' + page
         }
-
         notes += `
           <div class='border-b border-dotted border-gray-600 pb-1 pt-4 px-2'>
             <span class='font-bold'>${location.dateStart[j]} — ${location.dateEnd[j]}:</span> ${location.notes[j]}
@@ -143,12 +135,10 @@ function generateMarker(dataset, L, map, target) {
       ).bindPopup(textBlock));
     }
   }
-
   map.addLayer(markers.value);
 }
 
 onMounted(() => {
-
   map = L.map('map').setView(appConfig.map.center, appConfig.map.zoomInit);
 
   /* CartoDB.PositronNoLabels */
@@ -202,7 +192,6 @@ onMounted(() => {
 })
 
 watch(() => letterType.value, (newValue, oldValue) => {
-
   if (newValue == 'to') {
     generateMarker(mapCorrespondenceDatasetOut.value, L, map, 'to')
   } else {

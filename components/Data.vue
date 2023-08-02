@@ -3,6 +3,13 @@
 </template>
 
 <script setup>
+
+/* CHROME ft. ARQUERO BUG DESCRIPTION 
+
+In Chrome, data has to be sorted before any join so that the values are defined for column which have to 
+be present in the join 
+*/
+
 import * as aq from 'arquero'; // https://uwdata.github.io/arquero/api/
 
 const appConfig = useAppConfig()
@@ -34,10 +41,13 @@ const directedMaterial = useState('directedMaterial', () => [])
 const allAuthors = useState('allAuthors', () => [])
 
 const meetingsDataset = useState('meetingsDataset', () => [])
-
 const meetingsAgg = useState('meetingsAgg', () => [])
 const documentsDataset = useState('documentsDataset', () => [])
 const materialDataset = useState('materialDataset', () => [])
+
+// map meeting trigger
+const counterMapMeeting = useState('counterMapMeeting', () => [])
+counterMapMeeting.value = 0
 
 // iterator to bypass Airtable limit to 100 entries
 function iterCalls(iterator, table, offset, data, trigger) {
@@ -247,7 +257,10 @@ watch(() => [triggerMaterial.value], () => {
     tCorrespondenceCompleteOut = tCorrespondenceCompleteOut.join_left(tDocuments, 'Document_new')
 
     const peopleAgent = dataPeople.value.sort((a, b) => {
-      if ( a.fields['Nationality'] == undefined ) {
+      if ( 
+          a.fields['Nationality'] == undefined || 
+          a.fields['Date of death'] == undefined
+      ) {
         return 1;
       } else {
         return -1
@@ -261,7 +274,10 @@ watch(() => [triggerMaterial.value], () => {
     const tPeopleAgent = aq.from(peopleAgent)
 
     const peopleRecipient = dataPeople.value.sort((a, b) => {
-      if ( a.fields['Nationality'] == undefined ) {
+      if ( 
+          a.fields['Nationality'] == undefined || 
+          a.fields['Date of death'] == undefined
+      ) {
         return 1;
       } else {
         return -1
@@ -282,6 +298,7 @@ watch(() => [triggerMaterial.value], () => {
     tCorrespondenceCompleteIn = tCorrespondenceCompleteIn.join_left(tPeopleAgent, ['Agent_uniq','agent_id'])
     tCorrespondenceCompleteIn = tCorrespondenceCompleteIn.join_left(tPeopleRecipient, ['Recipient_uniq','recipient_id'])
 
+    
     mapCorrespondenceDatasetIn.value = tCorrespondenceCompleteIn.groupby('createdLocIn').rollup({
       city: aq.op.max('Name'),
       source: aq.op.array_agg('ID_1'),

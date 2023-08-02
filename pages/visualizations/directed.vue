@@ -10,62 +10,79 @@
     part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
   />
 
-  <div class="py-12">
-    <FormKit
-      v-model="author"
-      type="select"
-      label="Select an Author"
-      name="author"
-      inner-class="ring-0 focus-within:ring-gray-500"
-      :options="allAuthors"
-    />
+  <BaseLoader :displayLoader="displayLoader" padding="py-44" />
 
-    <AuthorCard 
-      :authorInfo="authorInfo"
-    />
+  <div v-if="displayLoader != 'block' ">
+    <div class="py-12">
+      <FormKit
+        v-model="author"
+        type="select"
+        label="Select an Author"
+        name="author"
+        inner-class="ring-0 focus-within:ring-gray-500"
+        :options="allAuthors"
+      />
 
-    <FormKit
-      v-model="selectedEvents"
-      type="checkbox"
-      label=" "
-      :options="['Meetings', 'Material Exchanges']"
-      help=" "
-      outer-class="mt-12 !mb-0"
-      fieldset-class="border-0"
-      options-class="flex gap-8"
-      wrapper-class="!items-end border-0"
-      decorator-class="text-gray-500 peer-checked:ring-gray-500 peer-checked:text-gray-500"
-    />
+      <AuthorCard 
+        :authorInfo="authorInfo"
+      />
 
-    <div class="">
-      <div class="p-2 flex justify-end gap-4">
-        <div class="flex items-end">
-          <svg class="w-4 h-4 inline-block">
-            <circle cx="6" cy="6" r="6" fill="var(--beige)" />
-          </svg>
-          <span class="text-beige text-sm font-bold">Meetings</span>
-        </div>
-        <div>
-          <svg class="w-4 h-4 inline-block">
-            <circle cx="6" cy="6" r="6" fill="var(--dark-brown)" />
-          </svg>
-          <span class="text-dark-brown text-sm font-bold">Material Exchanges</span>
+      <FormKit
+        v-model="selectedEvents"
+        type="checkbox"
+        label=" "
+        :options="['Meetings', 'Material Exchanges']"
+        help=" "
+        outer-class="mt-12 !mb-0"
+        fieldset-class="border-0"
+        options-class="flex gap-8"
+        wrapper-class="!items-end border-0"
+        decorator-class="text-gray-500 peer-checked:ring-gray-500 peer-checked:text-gray-500"
+      />
+
+      <div class="">
+        <div class="p-2 flex justify-end gap-4">
+          <div class="flex items-end">
+            <svg class="w-4 h-4 inline-block">
+              <circle cx="6" cy="6" r="6" fill="var(--beige)" />
+            </svg>
+            <span class="text-beige text-sm font-bold">Meetings</span>
+          </div>
+          <div>
+            <svg class="w-4 h-4 inline-block">
+              <circle cx="6" cy="6" r="6" fill="var(--dark-brown)" />
+            </svg>
+            <span class="text-dark-brown text-sm font-bold">Material Exchanges</span>
+          </div>
         </div>
       </div>
+
     </div>
 
+    <div id="directed">
+    </div>
+    
+    <div class="py-24">
+    </div>
   </div>
 
-  <div id="directed">
-  </div>
-  
-  <div class="py-24">
-  </div>
 
 </template>
 
 <script setup>
 import * as d3 from 'd3'
+
+/* LOADER */
+const allAuthors = useState('allAuthors')
+const displayLoader = ref('block')
+watch(() => allAuthors.value, (newValue, oldValue) => {
+  displayLoader.value = 'none';
+})
+onMounted(() => {
+  if (allAuthors.value.length > 0) {
+    displayLoader.value = 'none';
+  }
+})
 
 const selectedEvents = ref(['Meetings', 'Material Exchanges'])
 
@@ -73,7 +90,6 @@ const selectedEvents = ref(['Meetings', 'Material Exchanges'])
 
 const author = ref('')
 const authorInfo = ref('')
-const allAuthors = useState('allAuthors')
 
 const peopleDataset = useState('peopleDataset')
 const directedMeetings = useState('directedMeetings')

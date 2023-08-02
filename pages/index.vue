@@ -12,6 +12,13 @@
           From 1900 to 1969
         </div>
       </div>
+
+      <div class="pt-6">
+        <div class="py-2 text-blue-800 text-sm text-center">
+          With the support of
+        </div>
+        <img class="w-56 mx-auto" src="/images/logo_fwf.png" alt="logo_FWF"/>
+      </div>
       
       <BlockImage />
 

@@ -1,15 +1,22 @@
 <template>
+
   <HeaderViz />
+
   <Tooltip 
     :description="popupDescription"
     :title="popupTitle"
   />
+
   <BaseContent 
     title="Timeline of Author Meetings and Material Exchanges"
     part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
     part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
   />
-  <div class="py-12">
+
+  <BaseLoader :displayLoader="displayLoader" padding="py-44" />
+
+  <div v-if="displayLoader != 'block' " class="py-12">
+
     <FormKit
       v-model="author"
       type="select"
@@ -62,17 +69,29 @@
     
     <div class="p-48"></div>
   </div>
+
 </template>
 
 <script setup>
 // using timeline standalone build 
 // https://visjs.github.io/vis-timeline/examples/timeline/
 
+/* LOADER */
+const allAuthors = useState('allAuthors')
+const displayLoader = ref('block')
+watch(() => allAuthors.value, (newValue, oldValue) => {
+  displayLoader.value = 'none';
+})
+onMounted(() => {
+  if (allAuthors.value.length > 0) {
+    displayLoader.value = 'none';
+  }
+})
+
 const selectedEvents = ref(['Meetings', 'Material Exchanges', 'Publications'])
 
 const author = ref('')
 const authorInfo = ref('')
-const allAuthors = useState('allAuthors')
 
 const popupDescription = ref('')
 const popupTitle = ref('')
@@ -80,11 +99,11 @@ const popupTitle = ref('')
 const popupVisible = useState('popupVisible', () => false)
 
 const peopleDataset = useState('peopleDataset')
-const meetingsDatasetUnroll = useState('meetingsDatasetUnroll')
 
 const meetingsAgg = useState('meetingsAgg')
 const documentsDataset = useState('documentsDataset')
 const materialDataset = useState('materialDataset')
+
 
 watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
@@ -175,6 +194,9 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
   const material = materialDataset.value.filter(x => x['authorUnified'] == vals.createdPerson)
   for (let i = 0; i<material.length; i++) {
+
+    console.log('mat notes', material[i]['notes'])
+
     if (material[i]['dateStart'] != undefined && selectedEvents.value.includes('Material Exchanges')) {
       
       let content = '';
@@ -222,19 +244,33 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
   const options = {
     template: function (item, element, data) {
+
+      let content;
+      if (data.id.split('-')[0] === 'document') {
+        content = `<span class='italic'>` + item.content + `</span>`
+      } else if (data.id.split('-')[0] === 'material') {
+        if (item.content.includes('of')) {
+          content = item.content.split('of')[0]  + ` of <span class='italic'>${item.content.split('of')[1]}</span>`
+        } else {
+          content = item.content;
+        }
+      } else {
+        content = item.content;
+      }
+      console.log('data notes', data.notes);
       const html = `
         <div 
           id='${data.id}' 
-          data-description='${data.description}'
-          data-date-start='${data.dateStart}'
-          data-date-end='${data.dateEnd}'
-          data-source='${data.source}'
-          data-page='${data.page}'
-          data-participants='${data.participants}'
-          data-notes='${data.notes}'
-          data-pub='${data.pub}'
+          data-description="${data.description}"
+          data-date-start="${data.dateStart}"
+          data-date-end="${data.dateEnd}"
+          data-source="${data.source}"
+          data-page="${data.page}"
+          data-participants="${data.participants}"
+          data-notes="${data.notes}"
+          data-pub="${data.pub}"
         >
-          ${item.content}
+          ${content}
         </div>`
 
       return html;
@@ -242,18 +278,23 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
     xss: {
       disabled: false,
       filterOptions: {
-        whiteList: { div: [
-          'class', 
-          'id', 
-          'data-description', 
-          'data-date-start', 
-          'data-date-end',
-          'data-source',
-          'data-page',
-          'data-participants',
-          'data-notes',
-          'data-pub'
-        ] }
+        whiteList: { 
+          div: [
+            'class', 
+            'id', 
+            'data-description', 
+            'data-date-start', 
+            'data-date-end',
+            'data-source',
+            'data-page',
+            'data-participants',
+            'data-notes',
+            'data-pub'
+          ],
+          span: [
+            'class'
+          ]
+      }
       },
     },
     tooltip: {
@@ -284,7 +325,10 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
     let publication = '';
     let main = '';
 
+    console.log('ds notes', el.dataset);
+
     if (el.dataset.notes != 'undefined') {
+      
       notes = ": " + el.dataset.notes
     };
 

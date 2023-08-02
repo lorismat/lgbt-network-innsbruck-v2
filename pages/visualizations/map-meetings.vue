@@ -6,93 +6,70 @@
     part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
   />
 
+  <BaseLoader :displayLoader="displayLoader" padding="py-6" />
+
   <div class="py-12">
     <div id="map"></div>
   </div>
 </template>
 
 <script setup>
+
+/* LOADER */
+const allAuthors = useState('allAuthors')
+const displayLoader = ref('block')
+watch(() => allAuthors.value, (newValue, oldValue) => {
+  displayLoader.value = 'none';
+  generateMarker(mapMeetingsDataset.value, L, map)
+})
+onMounted(() => {
+  if (allAuthors.value.length > 0) {
+    displayLoader.value = 'none';
+  }
+})
+
 const appConfig = useAppConfig()
 
+const counterMapMeeting = useState('counterMapMeeting')
 const mapMeetingsDataset = useState('mapMeetingsDataset')
 const peopleDataset = useState('peopleDataset')
+
 let map;
+const markers = ref();
+const specIcon = ref();
 
+watch(() => counterMapMeeting.value, (newValue, oldValue) => {
+  if (counterMapMeeting.value > 0) {
+    generateMarker(mapMeetingsDataset.value, L, map)
+  }
+})
 
-onMounted(() => {
-  // try: Jawg.Light
-  // try: Stadia.AlidadeSmooth
-  // try: Stamen_TonerBackground
-  // try: Stamen_TonerLite
-  // try: Esri.WorldGrayCanvas
-  // try: CartoDB.PositronNoLabels
-  // try: with extra Stamen.TonerLabels
-  map = L.map('map').setView(appConfig.map.center, appConfig.map.zoomInit);
+function generateMarker(dataset, L, map) {
 
-  /* CartoDB.PositronNoLabels */
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    maxZoom: 10,
-    minZoom: 2,
-    ext: 'png'
-  }).addTo(map);
+  if (markers.value != undefined) {
+    map.removeLayer(markers.value);
 
-  /* Stamen Toner Labels */
-  L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-labels/{z}/{x}/{y}{r}.{ext}', {
-    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom: 10,
-    minZoom: 8,
-    ext: 'png'
-  }).addTo(map);
+    // reinitialize markers
+    markers.value = L.markerClusterGroup({
+      spiderLegPolylineOptions: { weight: 0 },
+      icon: specIcon.value,
+      polygonOptions: {
+        fillColor: 'transparent',
+        color: '#fff',
+        opacity: 0
+      },
+      iconCreateFunction: function(cluster) {
+        const radius = Math.max(30, Math.min(7 * cluster.getChildCount(), 100));
+        return L.divIcon({ 
+          html: cluster.getChildCount(),
+          className: 'mycluster',
+          iconSize: L.point(radius, radius)
+        });
+      }
+    });
+  }
 
-  /* Esri.WorldGrayCanvas
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-	  attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-    maxZoom: 10,
-    minZoom: 2,
-  }).addTo(map);
-  */
-
-  /* Stadia.AlidadeSmooth
-  L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
-    maxZoom: 10,
-    minZoom: 2,
-    attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-  }).addTo(map);
-  */ 
-
-  const specIcon = L.icon({
-    iconUrl: '/images/marker.png',
-    iconSize:     [20, 30], // size of the icon
-    iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location
-    popupAnchor:  [-10, -20] // point from which the popup should open relative to the iconAnchor
-  });
-
-  L.Marker.mergeOptions({
-      icon: specIcon
-  });
-
-  const markers = L.markerClusterGroup({
-    spiderLegPolylineOptions: { weight: 0 },
-    icon: specIcon,
-    polygonOptions: {
-      fillColor: 'transparent',
-      color: '#fff',
-      opacity: 0
-    },
-    iconCreateFunction: function(cluster) {
-
-      const radius = Math.max(30, Math.min(7 * cluster.getChildCount(), 100));
-
-      return L.divIcon({ 
-        html: cluster.getChildCount(),
-        className: 'mycluster',
-        iconSize: L.point(radius, radius)
-      });
-    }
-  });
-
-  for (let i = 0; i<mapMeetingsDataset.value.length; i++) {
+  for (let i = 0; i<dataset.length; i++) {
     const location = mapMeetingsDataset.value[i];
     if (location.lat != undefined && location.lon != undefined) {
       let notes = ''
@@ -141,11 +118,62 @@ onMounted(() => {
         </div>
         <!-- <p>${location.count} meetings</p> -->
       `
-      markers.addLayer(L.marker(
+      markers.value.addLayer(L.marker(
         [location.lat, location.lon]
       ).bindPopup(textBlock));
     }
   }
-  map.addLayer(markers);
+  map.addLayer(markers.value);
+}
+
+onMounted(() => {
+  map = L.map('map').setView(appConfig.map.center, appConfig.map.zoomInit);
+
+  /* CartoDB.PositronNoLabels */
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 10,
+    minZoom: 2,
+    ext: 'png'
+  }).addTo(map);
+
+  /* Stamen Toner Labels */
+  L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-labels/{z}/{x}/{y}{r}.{ext}', {
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 10,
+    minZoom: 8,
+    ext: 'png'
+  }).addTo(map);
+
+  const specIcon = L.icon({
+    iconUrl: '/images/marker.png',
+    iconSize:     [20, 30], // size of the icon
+    iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location
+    popupAnchor:  [-10, -20] // point from which the popup should open relative to the iconAnchor
+  });
+
+  L.Marker.mergeOptions({
+      icon: specIcon
+  });
+
+  markers.value = L.markerClusterGroup({
+    spiderLegPolylineOptions: { weight: 0 },
+    icon: specIcon,
+    polygonOptions: {
+      fillColor: 'transparent',
+      color: '#fff',
+      opacity: 0
+    },
+    iconCreateFunction: function(cluster) {
+
+      const radius = Math.max(30, Math.min(7 * cluster.getChildCount(), 100));
+
+      return L.divIcon({ 
+        html: cluster.getChildCount(),
+        className: 'mycluster',
+        iconSize: L.point(radius, radius)
+      });
+    }
+  });
 })
 </script>

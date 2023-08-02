@@ -10,35 +10,52 @@
     part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
   />
 
-  <div class="py-12">
-    <FormKit
-      v-model="author"
-      type="select"
-      label="Select an Author"
-      name="author"
-      inner-class="ring-0 focus-within:ring-gray-500"
-      :options="allAuthors"
-    />
+  <BaseLoader :displayLoader="displayLoader" padding="py-44" />
 
-    <AuthorCard 
-      :authorInfo="authorInfo"
-    />
-  </div>
+  <div v-if="displayLoader != 'block' ">
+    <div class="py-12">
+      <FormKit
+        v-model="author"
+        type="select"
+        label="Select an Author"
+        name="author"
+        inner-class="ring-0 focus-within:ring-gray-500"
+        :options="allAuthors"
+      />
 
-  <div id="sankey">
-  </div>
+      <AuthorCard 
+        :authorInfo="authorInfo"
+      />
+    </div>
 
-  <div class="py-24">
+    <div id="sankey">
+    </div>
+
+    <div class="py-24">
+    </div>
   </div>
+    
 </template>
 
 <script setup>
 import * as d3 from 'd3'
 import { sankey as d3Sankey, sankeyLinkHorizontal, sankeyJustify } from 'd3-sankey'
 
+/* LOADER */
+const allAuthors = useState('allAuthors')
+const displayLoader = ref('block')
+watch(() => allAuthors.value, (newValue, oldValue) => {
+  displayLoader.value = 'none';
+})
+onMounted(() => {
+  if (allAuthors.value.length > 0) {
+    displayLoader.value = 'none';
+  }
+})
+
+
 const author = ref('')
 const authorInfo = ref('')
-const allAuthors = useState('allAuthors')
 
 const peopleDataset = useState('peopleDataset')
 const sankeyMeetings = useState('sankeyMeetings')
