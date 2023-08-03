@@ -6,8 +6,10 @@
   />
   <BaseContent 
     title="Sankey-Diagram for Author Meetings"
-    part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
-    part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
+    part1="
+    If you select an author from the drop-down menu below, it will generate a diagram of all their meetings with other LGBTQ+ exile writers organized according to location.
+    If you click on a particular connection, a pop-up box will give you further information about the meetings that took place between writers in a given location.
+    "
   />
 
   <BaseLoader :displayLoader="displayLoader" padding="py-44" />
@@ -104,6 +106,7 @@ watch(() => author.value, (newValue, oldValue) => {
     let linksArray = []
     filteredMeetings.forEach((e, idx) => {
       for (let i = 0; i<e.participants.length;i++) {
+
         if ( e.participants[i] != author.value ) { 
 
           if (linksArray.filter(it => it.source === e.participants[i] && it.target === e.city).length > 0) {
@@ -114,7 +117,12 @@ watch(() => author.value, (newValue, oldValue) => {
               "notes": e.notes,
               "source": e.source,
               "page": e.page,
-              "participants": e.participants
+              "participants": e.participants,
+              "dob": e.dob,
+              "dod": e.dod,
+              "sexuality": e.sexuality,
+              "job": e.job,
+              "nationality": e.nationality
             })
           } else {
             linksArray.push({
@@ -127,7 +135,12 @@ watch(() => author.value, (newValue, oldValue) => {
                 "notes": e.notes,
                 "source": e.source,
                 "page": e.page,
-                "participants": e.participants
+                "participants": e.participants,
+                "dob": e.dob,
+                "dod": e.dod,
+                "sexuality": e.sexuality,
+                "job": e.job,
+                "nationality": e.nationality
               }]
             })
           }
@@ -283,6 +296,25 @@ watch(() => author.value, (newValue, oldValue) => {
             page = 'p. ' + page
           }
 
+          let participants = [];
+          let participantString = '<br>';
+
+          for (let j = 0; j<meetings[i].participants.length; j++) {
+            participants.push({
+              "name": meetings[i].participants[j],
+              "dob": meetings[i].dob[j],
+              "dod": meetings[i].dod[j],
+              "nationality": meetings[i].nationality[j],
+              "sexuality": meetings[i].sexuality[j],
+              "job": meetings[i].job[j]
+            })
+
+            participantString += `
+              ● ${participants[j].name} (${participants[j].dob} — ${participants[j].dod}) was a 
+              ${participants[j].nationality.join('/')}, ${participants[j].sexuality}, ${participants[j].job.join(', ')}.
+              <br>
+            `
+          }
 
           popupDescription.value += `
             <div class="pb-2 my-2 border-b border-dashed border-gray-500 text-sm">
@@ -290,8 +322,12 @@ watch(() => author.value, (newValue, oldValue) => {
                 <span class='font-sans font-bold'>${meetings[i].dateStart} — ${meetings[i].dateEnd}: </span>
                 <span class=''>${meetings[i].notes}</span>
               </div>
-              <div><span class='font-sans font-bold'>Participants: </span>${meetings[i].participants.join(', ')}</div>
+              <div><span class='font-sans font-bold'>Participants: </span>
+                ${participantString}
+              </div>
+
               <div>
+                <br>
                 <span class='font-sans font-bold'>Source: </span>
                 <span class='italic'>${meetings[i].source.split('_')[0].split('by')[0]}</span> by <span>${meetings[i].source.split('_')[0].split('by')[1]}</span>
                 (${page})

@@ -6,8 +6,13 @@
   />
   <BaseContent 
     title="Force-Directed Graph of Author Meetings and Material Exchanges"
-    part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
-    part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
+    part1="
+    If you select an author from the drop-down menu below, it will generate a graph of all their meetings and material exchanges with other LGBTQ+ exile writers organized according to the relative density of connections. Material exchanges indicate instances where one LGBTQ+ exile writer read, reviewed, or alluded to another writer and their work or corresponded with them. 
+    "
+    part2="
+    The relative density of connections between writers is indicated by the thickness of the lines in the graph, with thick lines indicating a higher number of connections and thin lines a lower number. You can choose to select meetings or material exchanges in the check boxes above the graph. If you click on a particular connection between writers on the graph, a pop-up box will give you further information about the meetings or creative exchanges that occurred between them. 
+
+    "
   />
 
   <BaseLoader :displayLoader="displayLoader" padding="py-44" />
@@ -159,7 +164,13 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
                         "notes": filteredDataset[j].notes,
                         "source": filteredDataset[j].source,
                         "page": filteredDataset[j].page,
-                        "participants": filteredDataset[j].participants
+                        "participants": filteredDataset[j].participants,
+                        "dob": filteredDataset[j].dob,
+                        "dod": filteredDataset[j].dod,
+                        "sexuality": filteredDataset[j].sexuality,
+                        "job": filteredDataset[j].job,
+                        "nationality": filteredDataset[j].nationality,
+                        "type": filteredDataset[j].type
                       })
                     } else {
                       linksArray.push({
@@ -173,7 +184,13 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
                           "notes": filteredDataset[j].notes,
                           "source": filteredDataset[j].source,
                           "page": filteredDataset[j].page,
-                          "participants": filteredDataset[j].participants
+                          "participants": filteredDataset[j].participants,
+                          "dob": filteredDataset[j].dob,
+                          "dod": filteredDataset[j].dod,
+                          "sexuality": filteredDataset[j].sexuality,
+                          "job": filteredDataset[j].job,
+                          "nationality": filteredDataset[j].nationality,
+                        "type": filteredDataset[j].type
                         }]
                       })
                     }
@@ -376,6 +393,20 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
           const city = el.target.name
           const evs = el.meetings
 
+          console.log(evs, evs[0])
+
+
+          // sort material exchange by type in alphabetical order
+          
+          if (evs[0].type != undefined) {
+            console.log('sorting')
+            evs.sort((a, b) => {
+              if(a.type < b.type) { return -1; }
+              if(a.type > b.type) { return 1; }
+            })
+          }
+          
+
           let evenement = ''
           if (el.serie == 0 && selectedEvents.value[0] == 'Meetings') {
             evenement = 'Meeting'
@@ -393,7 +424,10 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
           popupDescription.value = ''
 
+
+
           for ( let i=0 ; i<evs.length; i++) {
+
 
             let page = evs[i].page;
             if (page.includes('-')) {
@@ -401,14 +435,45 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
             } else {
               page = 'p. ' + page
             }
+
+            let matExchangeType = '';
+            if (selectedEvents.value[0] !== 'Meetings') {
+              matExchangeType += `
+                ${evs[i].type}<br>
+              `
+            }
+
+            let participants = [];
+            let participantString = '<br>';
+            for (let j = 0; j<evs[i].participants.length; j++) {
+              participants.push({
+                "name": evs[i].participants[j],
+                "dob": evs[i].dob[j],
+                "dod": evs[i].dod[j],
+                "nationality": evs[i].nationality[j],
+                "sexuality": evs[i].sexuality[j],
+                "job": evs[i].job[j]
+              })
+
+              participantString += `
+                ● ${participants[j].name} (${participants[j].dob} — ${participants[j].dod}) was a 
+                ${participants[j].nationality.join('/')}, ${participants[j].sexuality}, ${participants[j].job.join(', ')}.
+                <br>
+              `
+            }
+
+            participantString += '<br>'
             
             popupDescription.value += `
               <div class="pb-2 my-2 border-b border-dashed border-gray-500 text-sm">
+                <span class='underline'>${matExchangeType}</span>
                 <div class="py-2">
                   <span class='font-sans font-bold'>${evs[i].dateStart} — ${evs[i].dateEnd}: </span>
                   <span class=''>${evs[i].notes}</span>
                 </div>
-                <div><span class='font-sans font-bold'>Participants: </span>${evs[i].participants.join(', ')}</div>
+                <div><span class='font-sans font-bold'>Participants: </span>
+                  ${participantString}
+                </div>
                 <div>
 
                   <span class='font-sans font-bold'>Source: </span>

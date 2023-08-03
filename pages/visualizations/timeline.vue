@@ -9,8 +9,12 @@
 
   <BaseContent 
     title="Timeline of Author Meetings and Material Exchanges"
-    part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
-    part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
+    part1="
+    If you select an author from the drop-down menu below, it will generate a timeline of all their meetings and material exchanges with other LGBTQ+ exile writers organized according to date. Material exchanges indicate instances where one LGBTQ+ exile writer read, reviewed, or alluded to another writer and their work or corresponded with them. 
+    You can choose to view meetings, material exchanges, or a particular author’s publications by selecting the boxes directly above the timeline."
+    part2="
+If you click on a particular point on the timeline, a pop-up box will give you further information about a particular meeting or creative exchange between writers. To isolate a particular section of the timeline, you can zoom in or out using your mouse.
+      "
   />
 
   <BaseLoader :displayLoader="displayLoader" padding="py-44" />
@@ -143,15 +147,40 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
   
   for (let i = 0; i<meetings.length; i++) {
     if (meetings[i]['dateStart'] != undefined && meetings[i]['location'] != undefined &&  meetings[i]['notes'] != undefined && selectedEvents.value.includes('Meetings')) {
-      
+
       let participants = meetings[i]['participants'].filter(x => x != author.value);
 
       if (participants.length === 2) {
-        participants = participants.join(' and ')
+        participants = participants.join(' and ').replaceAll(/["]/g, "\'")
       } else if (participants.length > 2) {
-        participants = participants.join(', ')
+        participants = participants.join(', ').replaceAll(/["]/g, "\'")
+      } else {
+        participants = participants.join('').replaceAll(/["]/g, "\'")
       }
       const cityMeeting = meetings[i]['location'];
+
+      let participantsArray = [];
+      let participantString = '<br>';
+
+      for (let j = 0; j<meetings[i].participants.length; j++) {
+        participantsArray.push({
+          "name": meetings[i].participants[j],
+          "dob": meetings[i].dob[j],
+          "dod": meetings[i].dod[j],
+          "nationality": meetings[i].nationality[j],
+          "sexuality": meetings[i].sexuality[j],
+          "job": meetings[i].job[j]
+        })
+
+        participantString += `
+          ● ${participantsArray[j].name} (${participantsArray[j].dob} — ${participantsArray[j].dod}) was a 
+          ${participantsArray[j].nationality.join('/')}, ${participantsArray[j].sexuality}, ${participantsArray[j].job.join(', ')}.
+          <br>
+        `
+      }
+
+      participantString += '<br>'
+      participantString = participantString.replaceAll(/["]/g, "\'");
 
       itemsArray.push(
         { 
@@ -161,7 +190,7 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
           start: meetings[i]['dateStart'], 
           dateStart: meetings[i]['dateStart'],
           dateEnd: meetings[i]['dateEnd'], 
-          participants: meetings[i]['participants'].join(', '), 
+          participants: participantString, 
           className: 'metaClass beige',
           description: `Meeting with ${participants} in ${cityMeeting}`, 
           source: meetings[i]['source'],
@@ -194,12 +223,8 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
   const material = materialDataset.value.filter(x => x['authorUnified'] == vals.createdPerson)
   for (let i = 0; i<material.length; i++) {
-
-
     if (material[i]['dateStart'] != undefined && selectedEvents.value.includes('Material Exchanges')) {
-      
       let content = '';
-
       if (material[i]['type'] === 'Letter') {
         content = `Letter to ${material[i]['participants']}`
       } else if (material[i]['type'] === 'Allusion' && material[i]['document'] != undefined && material[i]['participants'].length === 0) {
@@ -215,6 +240,35 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
       } else {
         content = material[i]['type']
       }
+
+      /*
+      let participantsArray = [];
+      let participantString = '<br>';
+
+      for (let j = 0; j<meetings[i].participants.length; j++) {
+        participantsArray.push({
+          "name": meetings[i].participants[j],
+          "dob": meetings[i].dob[j],
+          "dod": meetings[i].dod[j],
+          "nationality": meetings[i].nationality[j],
+          "sexuality": meetings[i].sexuality[j],
+          "job": meetings[i].job[j]
+        })
+
+        participantString += `
+          ● ${participantsArray[j].name} (${participantsArray[j].dob} — ${participantsArray[j].dod}) was a 
+          ${participantsArray[j].nationality.join('/')}, ${participantsArray[j].sexuality}, ${participantsArray[j].job.join(', ')}.
+          <br>
+        `
+      }
+
+      participantString += '<br>'
+      participantString = participantString.replaceAll(/["]/g, "\'");
+
+      */
+
+      let participantString = '<br>part';
+
       itemsArray.push(
         { 
           id: 'material-' + i, 
@@ -227,6 +281,7 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
           source: material[i]['source'],
           page: material[i]['page'],
           notes: material[i]['notes'],
+          participants: participantString
         }
       )
     }
@@ -255,8 +310,6 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
       } else {
         content = item.content;
       }
-
-      console.log(data.notes, typeof(data.notes))
 
       if (data.notes != undefined) {
         data.notes = data.notes.replaceAll(/["]/g, "\'")
@@ -334,7 +387,7 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
       notes = ": " + el.dataset.notes
     };
 
-    if (el.id.split('-')[0] == 'meeting') { 
+    if (el.id.split('-')[0] == 'meeting' || el.id.split('-')[0] == 'material') { 
       participants = `
         <div><span class='font-sans font-bold'>Participants: </span>${el.dataset.participants}</div>
       `

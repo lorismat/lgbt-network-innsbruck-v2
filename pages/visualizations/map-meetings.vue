@@ -2,8 +2,9 @@
   <HeaderViz />
   <BaseContent 
     title="Map of Author Meetings"
-    part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
-    part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
+    part1="
+    This interactive map plots meetings between LGBTQ+ exile writers across the globe. The numbers in the icons indicate the number of locations where these meetings took place in different parts of the world. If you select an icon, they will divide ever more precisely according to location. If you click on an individual location icon, a pop-up box will give you further information about the meetings between writers that took place in the given location.
+    "
   />
 
   <BaseLoader :displayLoader="displayLoader" padding="py-6" />

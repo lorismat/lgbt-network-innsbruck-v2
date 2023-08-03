@@ -2,8 +2,11 @@
   <HeaderViz />
   <BaseContent 
     title="Map of Correspondence Between Authors"
-    part1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
-    part2="Lorem // Lorem // ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi."
+    part1="
+    This interactive map plots correspondence between LGBTQ+ exile writers across the globe. You can choose to either view places letters were sent from or sent to by using the select option directly above the map. The numbers in the icons indicate the number of locations where letters were exchanged between writers in different parts of the world. If you select an icon, they will divide ever more precisely according to location.    "
+    part2="
+    If you click on an individual location icon, a pop-up box will give you further information about the letters that were exchanged between writers at a given location.
+    "
   />
 
   <BaseLoader :displayLoader="displayLoader" padding="py-6" />

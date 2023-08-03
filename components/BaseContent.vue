@@ -5,11 +5,14 @@
     </div>
     <div class="max-w-3xl">
       {{ part1 }}
-      <span @click="  moreInfo = true" :style="moreInfo ? { 'display': 'none' } : { 'display': 'initial' }" class="text-gray-600 cursor-pointer underline decoration-dashed underline-offset-4">More info</span>
-      <span :style="!moreInfo ? { 'display': 'none' } : { 'display': 'initial' }">
+      <div v-if="part2 != undefined" >
+        <span @click="  moreInfo = true" :style="moreInfo ? { 'display': 'none' } : { 'display': 'initial' }" class="text-gray-600 cursor-pointer underline decoration-dashed underline-offset-4">More info</span>
+        <span :style="!moreInfo ? { 'display': 'none' } : { 'display': 'initial' }">
         {{ part2 }}
         <span @click="  moreInfo = false" class="text-gray-600 cursor-pointer underline decoration-dashed underline-offset-4">Less info</span>
-      </span>
+        </span>
+      </div>
+      
     </div>
   </div>
 </template>

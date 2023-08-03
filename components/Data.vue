@@ -139,6 +139,11 @@ watch(() => [triggerLocations.value, triggerMeetings.value, triggerMaterial.valu
       source: aq.op.max('Document (evidence of meeting)'),
       page: aq.op.max('Page number'),
       participants: aq.op.array_agg('ID'),
+      dob: aq.op.array_agg('Date of birth'),
+      dod: aq.op.array_agg('Date of death'),
+      nationality: aq.op.array_agg('Nationality'),
+      sexuality: aq.op.array_agg('Sexual orientation'),
+      job: aq.op.array_agg('Occupation'),
       dateStart: aq.op.max('Start date'),
       dateEnd: aq.op.max('End date'),
       notes: aq.op.max('Summary'),
@@ -149,11 +154,19 @@ watch(() => [triggerLocations.value, triggerMeetings.value, triggerMaterial.valu
     source: aq.op.max('ID_source_2'),
     page: aq.op.max('Page number'),
     participants: aq.op.array_agg('ID_source'),
+    dob: aq.op.array_agg('Date of birth'),
+    dod: aq.op.array_agg('Date of death'),
+    nationality: aq.op.array_agg('Nationality'),
+    sexuality: aq.op.array_agg('Sexual orientation'),
+    job: aq.op.array_agg('Occupation'),
     dateStart: aq.op.max('Start date of activity'),
     dateEnd: aq.op.max('End date of activity'),
     notes: aq.op.max('Summary'),
-  }).filter(d => d.participants.length > 1).objects();    
+    type: aq.op.max('Type'),
+  }).filter(d => d.participants.length > 1).objects();  
 
+  console.log('grouiped material', tMaterialUnrollParticipants.groupby('Material Exchange ID'))
+  
   sankeyMeetings.value = groupedMeetingsAll;
   directedMeetings.value = groupedMeetingsAll;
   directedMaterial.value = groupedMaterialAll;
@@ -541,6 +554,11 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     // group meetings together again (in case more than 2 participants)
     meetingsAgg.value = fullMeetings.groupby('ID_1').rollup({ 
       participants: aq.op.max('ID (from Participants)'),
+      dob: aq.op.array_agg('Date of birth'),
+      dod: aq.op.array_agg('Date of death'),
+      nationality: aq.op.array_agg('Nationality'),
+      sexuality: aq.op.array_agg('Sexual orientation'),
+      job: aq.op.array_agg('Occupation'),
       source: aq.op.max('Document (evidence of meeting)'),
       dateStart: aq.op.max('Start date'),
       dateEnd: aq.op.max('End date'),
