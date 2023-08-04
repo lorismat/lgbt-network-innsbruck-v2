@@ -28,6 +28,11 @@
 Previous funding has been provided by the Digital Humanities Research Center at the University of Innsbruck—within the scope of their DI4DH (“Digitization and Information Extraction for the Digital Humanities”) program funded through the Austrian Federal Ministry for Science, Research, and the Economy—and the State of Vorarlberg (Amt der Vorarlberger Landesregierung), as part of their program to support academic work with a connection to Vorarlberg. <br><br>
 Assistance in the conceptualization and design of the project database has been provided by Worthy Martin (Associate Professor in the Department of Computer Science, University of Virginia, United States) and Simon Siegert (IT-Systems Engineer, Potsdam, Germany). The visualizations website was designed by Siegert and Loris Mat (Data Visualization Designer, Montpellier, France). The data entry was completed by both Benjamin Robbins and Johanna Unterholzner (University of Innsbruck).
 
+    <div class="py-8">
+      <img class="max-w-xs mx-auto py-4" src="/images/logo_fwf.png" alt="FWF Logo">
+      <img class="max-w-xs mx-auto py-4" src="/images/logo_vorarlberger.png" alt="Vorarlberger Logo">
+    </div>
+
     </div>
     <TheSubTitle subtitle="Sources"/>
     <div class="mx-auto text-gray-800 max-w-3xl">

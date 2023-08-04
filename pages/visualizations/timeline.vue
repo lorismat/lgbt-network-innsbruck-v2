@@ -310,6 +310,10 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
         data.notes = data.notes.replaceAll(/["]/g, "\'")
       }
 
+      if (data.source != undefined) {
+        data.source = data.source.replaceAll(/["]/g, "\'")
+      }
+
       const html = `
         <div 
           id='${data.id}' 
@@ -382,10 +386,17 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
       notes = ": " + el.dataset.notes
     };
 
+    if (el.dataset.participants != undefined) {
+      console.log('partici', el.dataset.participants)
+    }
+
     if (el.id.split('-')[0] == 'meeting' || el.id.split('-')[0] == 'material') { 
-      participants = `
-        <div><span class='font-sans font-bold'>Participants: </span>${el.dataset.participants}</div>
-      `
+      if (el.dataset.participants != '<br><br>') {
+        participants = `
+          <div><span class='font-sans font-bold'>Participants: </span>${el.dataset.participants}</div>
+        `
+      }
+      
       // 
     }
 
@@ -428,7 +439,7 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
       publication = `
           <div>
             <span class='font-sans'>Published by </span>
-            <span class='italic'>${publisher}</span>
+            <span class=''>${publisher}</span>
             in <span class='font-bold'>${dateStart}</span>
           </div>
       `
@@ -446,7 +457,15 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
         `
           </div>
         `
-      popupTitle.value = el.dataset.description + ` (${dateStart.split('-')[0]})` 
+
+      if (el.dataset.pub != 'undefined' && el.dataset.pub != undefined) {
+        popupTitle.value = `<span class='italic'>${el.dataset.description}</span> (${dateStart.split('-')[0]})`
+      } else if (el.dataset.description.includes('Reading of')) {
+        popupTitle.value = `Reading of <span class='italic'>${el.dataset.description.split('Reading of')[1]}</span> (${dateStart.split('-')[0]})`
+      } else {
+        popupTitle.value = el.dataset.description + ` (${dateStart.split('-')[0]})`
+      }
+       
       popupVisible.value = true
 
     }

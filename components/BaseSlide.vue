@@ -1,6 +1,6 @@
 <template>
   <div :class="small ? 'my-1' : 'my-12'">
-    <div class="text-left font-sans uppercase">
+    <div class="text-left font-sans">
       {{ title }}
     </div>
     <img class="" :src="`/images/slides/${props.url}.png`" alt="">

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TheTitle title="Enhancement"/>
+    <TheTitle title="Future Directions"/>
     <TheSubTitle subtitle="Introduction"/>
     <div class="mx-auto text-gray-800 max-w-3xl text-justify">
       The current website explores many aspects of networks of Anglophone LGBTQ+ writers in exile. In future developments to the website, we would like to present new data, additional visualizations, and new features. Below we would like to showcase potential future directions for the website through mock-ups and short descriptions of our ideas. Here we aim to provide a glimpse of how the website could look in the near future. To introduce this potential work, we've divided this section into three parts: 
@@ -32,19 +32,19 @@
 
     <BaseSlide 
       url="slide_2" 
-      title="Block 1: Scope of the study"
+      title="Block 1: Scope of the Network"
       legend="In this overview of the scope of the network, you have different views of the whole database and connections between authors. The idea is to give an overview of the contents of the data and how the authors will be represented."
     />
 
     <BaseSlide 
       url="slide_3" 
-      title="Block 2: Visualization by Author"
+      title="Block 2: Visualizations by Author"
       legend="In this block, you can view different visualizations by author, including their biographies, their timelines, and their meetings and publications."
     />
 
     <BaseSlide 
       url="slide_4" 
-      title="Block 3: Visualization by Locations"
+      title="Block 3: Visualizations by Location"
       legend="In this block, you have a spatial overview of the data, including places of birth, places of exile, meetings, and correspondence."
     />
 
@@ -109,16 +109,16 @@
 
     
 
-    <TheSubTitle subtitle="III. Presenting the new visualizations"/>
+    <TheSubTitle subtitle="III. Presenting new visualizations"/>
     <div class="mx-auto text-gray-800 max-w-3xl">
-      An initial set of key metrics will present the general scope of the data.
+      Additional visualizations will require organizing and aggregating the data in new ways.
 
     
       <div class="py-6">
         <div class="py-2 px-6 font-bold">
           1. Key Metrics
         </div>
-        Showing a first set of key metrics to present the scope of the data. 
+        An initial set of key metrics will present the general scope of the data.
       </div>
 
       <div class="mx-auto text-center">

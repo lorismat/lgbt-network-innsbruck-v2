@@ -82,7 +82,7 @@ function generateMarker(dataset, L, map) {
           if (participantInfo != undefined) {
             participantStringEl += '• ' + participantInfo.ID_1 + 
             ` (${participantInfo['Date of birth']} — ${participantInfo['Date of death']})` + 
-            ` was a ${participantInfo['Nationality'] != undefined ? participantInfo['Nationality'][0] : ''}, ` + 
+            ` was a ${participantInfo['Nationality'] != undefined ? participantInfo['Nationality'].join('/') : ''}, ` + 
             `<span class=''>${participantInfo['Sexual orientation']}</span>, ` +
             `${participantInfo['Occupation'] != undefined ? participantInfo['Occupation'].join(', ') : ''}` +
             '<br>'

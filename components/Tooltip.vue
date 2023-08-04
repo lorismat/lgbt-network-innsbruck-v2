@@ -12,8 +12,7 @@
     >
       <div class="sticky top-0 bg-white z-10 px-8 py-4 flex justify-between items-center border-b border-gray-300">
 
-        <div>
-          {{ title }}
+        <div v-html="title">
         </div>
 
         <svg @click="popupVisible = false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg cursor-pointer" viewBox="0 0 16 16">
