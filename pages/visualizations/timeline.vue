@@ -241,18 +241,17 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
         content = material[i]['type']
       }
 
-      /*
       let participantsArray = [];
       let participantString = '<br>';
 
-      for (let j = 0; j<meetings[i].participants.length; j++) {
+      for (let j = 0; j<material[i].participants.length; j++) {
         participantsArray.push({
-          "name": meetings[i].participants[j],
-          "dob": meetings[i].dob[j],
-          "dod": meetings[i].dod[j],
-          "nationality": meetings[i].nationality[j],
-          "sexuality": meetings[i].sexuality[j],
-          "job": meetings[i].job[j]
+          "name": material[i].participants[j],
+          "dob": material[i].dob[j],
+          "dod": material[i].dod[j],
+          "nationality": material[i].nationality[j],
+          "sexuality": material[i].sexuality[j],
+          "job": material[i].job[j]
         })
 
         participantString += `
@@ -264,10 +263,6 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
       participantString += '<br>'
       participantString = participantString.replaceAll(/["]/g, "\'");
-
-      */
-
-      let participantString = '<br>part';
 
       itemsArray.push(
         { 

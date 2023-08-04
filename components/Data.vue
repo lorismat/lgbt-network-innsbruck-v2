@@ -164,8 +164,6 @@ watch(() => [triggerLocations.value, triggerMeetings.value, triggerMaterial.valu
     notes: aq.op.max('Summary'),
     type: aq.op.max('Type'),
   }).filter(d => d.participants.length > 1).objects();  
-
-  console.log('grouiped material', tMaterialUnrollParticipants.groupby('Material Exchange ID'))
   
   sankeyMeetings.value = groupedMeetingsAll;
   directedMeetings.value = groupedMeetingsAll;
@@ -530,6 +528,13 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
       source: aq.op.max('Source_full_doc2'),
       page: aq.op.max('Page number'),
       participants: aq.op.array_agg('ID_1'),
+
+      dob: aq.op.array_agg('Date of birth'),
+      dod: aq.op.array_agg('Date of death'),
+      nationality: aq.op.array_agg('Nationality'),
+      sexuality: aq.op.array_agg('Sexual orientation'),
+      job: aq.op.array_agg('Occupation'),
+
       dateStart: aq.op.max('Start date of activity'),
       dateEnd: aq.op.max('End date of activity'),
       notes: aq.op.max('Summary'),
