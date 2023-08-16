@@ -191,9 +191,10 @@ onMounted(() => {
 
   specIcon.value = L.icon({
     iconUrl: '/images/marker.png',
+
     iconSize:     [20, 30], // size of the icon
-    iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location
-    popupAnchor:  [-10, -20] // point from which the popup should open relative to the iconAnchor
+    iconAnchor:   [2, 25], // point of the icon which will correspond to marker's location
+    popupAnchor:  [6, -30] // point from which the popup should open relative to the iconAnchor
   });
 
   L.Marker.mergeOptions({
