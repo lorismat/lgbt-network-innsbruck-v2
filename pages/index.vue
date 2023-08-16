@@ -22,7 +22,7 @@
       
       <BlockImage />
 
-      <div class="text-sm  max-w-2xl text-center text-justify mx-auto">
+      <div class="text-lg  max-w-2xl text-center text-justify mx-auto">
         This project visualizes the global connections between twentieth-century LGBTQ+ exile writers by tracing their movement and creative exchanges across space and time in a series of interactive maps, graphs, and timelines.
       </div>
     </div>

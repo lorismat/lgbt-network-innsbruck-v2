@@ -172,8 +172,14 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
           "job": meetings[i].job[j]
         })
 
+        let article = 'a';
+        let vowelTest = '^[aieouAIEOU].*';
+        if (participantsArray[j].nationality.join('/').split('')[0].match(vowelTest)) {
+          article = 'an'
+        }
+
         participantString += `
-          ● ${participantsArray[j].name} (${participantsArray[j].dob} — ${participantsArray[j].dod}) was a 
+          ● ${participantsArray[j].name} (${participantsArray[j].dob} — ${participantsArray[j].dod}) was ${article} 
           ${participantsArray[j].nationality.join('/')}, ${participantsArray[j].sexuality}, ${participantsArray[j].job.join(', ')}.
           <br>
         `
@@ -228,7 +234,7 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
       if (material[i]['type'] === 'Letter') {
         content = `Letter to ${material[i]['participants']}`
       } else if (material[i]['type'] === 'Allusion' && material[i]['document'] != undefined && material[i]['participants'].length === 0) {
-        content = `Allusion to ${material[i]['document'].split(':')[0].split('by')[0]}`
+        content = `Allusion to <span class='italic'>${material[i]['document'].split(':')[0].split('by')[0]}</span>`
       } else if (material[i]['type'] === 'Viewing' && material[i]['document'] != undefined && material[i]['participants'].length === 0) {
         content = `Viewing of ${material[i]['document'].split(':')[0].split('by')[0]}`
       } else if (material[i]['type'] === 'Allusion' && material[i]['participants'].length > 0) {
@@ -254,8 +260,14 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
           "job": material[i].job[j]
         })
 
+        let article = 'a';
+        let vowelTest = '^[aieouAIEOU].*';
+        if (participantsArray[j].nationality.join('/').split('')[0].match(vowelTest)) {
+          article = 'an'
+        }
+
         participantString += `
-          ● ${participantsArray[j].name} (${participantsArray[j].dob} — ${participantsArray[j].dod}) was a 
+          ● ${participantsArray[j].name} (${participantsArray[j].dob} — ${participantsArray[j].dod}) was ${article} 
           ${participantsArray[j].nationality.join('/')}, ${participantsArray[j].sexuality}, ${participantsArray[j].job.join(', ')}.
           <br>
         `
@@ -381,14 +393,21 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
     let publication = '';
     let main = '';
 
+    // title of books in italic
     if (el.dataset.notes != 'undefined') {
-      
       notes = ": " + el.dataset.notes
+      notes = notes.split('_')
+      const notesFormatted = []
+      for (let i = 0; i<notes.length; i++) {
+        notesFormatted.push(notes[i])
+        if (i%2==0 && i<notes.length-1) {
+          notesFormatted.push('<i>')
+        } else if (i%2==1) {
+          notesFormatted.push('</i>')
+        }
+      }
+      notes = notesFormatted.join('');
     };
-
-    if (el.dataset.participants != undefined) {
-      console.log('partici', el.dataset.participants)
-    }
 
     if (el.id.split('-')[0] == 'meeting' || el.id.split('-')[0] == 'material') { 
       if (el.dataset.participants != '<br><br>') {

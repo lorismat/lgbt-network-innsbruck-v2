@@ -80,9 +80,16 @@ function generateMarker(dataset, L, map) {
         for (let k = 0; k<location.participants[j].length; k++) {
           const participantInfo = peopleDataset.value.filter(x => x['ID_1'] === location.participants[j][k])[0]
           if (participantInfo != undefined) {
+
+            let article = 'a';
+            let vowelTest = '^[aieouAIEOU].*';
+            if (participantInfo['Nationality'] != undefined && participantInfo['Nationality'].join('/').split('')[0].match(vowelTest)) {
+              article = 'an'
+            }
+
             participantStringEl += '• ' + participantInfo.ID_1 + 
             ` (${participantInfo['Date of birth']} — ${participantInfo['Date of death']})` + 
-            ` was a ${participantInfo['Nationality'] != undefined ? participantInfo['Nationality'].join('/') : ''}, ` + 
+            ` was ${article} ${participantInfo['Nationality'] != undefined ? participantInfo['Nationality'].join('/') : ''}, ` + 
             `<span class=''>${participantInfo['Sexual orientation']}</span>, ` +
             `${participantInfo['Occupation'] != undefined ? participantInfo['Occupation'].join(', ') : ''}` +
             '<br>'
@@ -100,9 +107,26 @@ function generateMarker(dataset, L, map) {
           page = 'p. ' + page
         }
 
+        let notesDescription = '';
+        // title of books in italic
+        if (location.notes[j] != 'undefined') {
+          notesDescription = ": " +location.notes[j]
+          notesDescription = notesDescription.split('_')
+          const notesFormatted = []
+          for (let i = 0; i<notesDescription.length; i++) {
+            notesFormatted.push(notesDescription[i])
+            if (i%2==0 && i<notesDescription.length-1) {
+              notesFormatted.push('<i>')
+            } else if (i%2==1) {
+              notesFormatted.push('</i>')
+            }
+          }
+          notesDescription = notesFormatted.join('');
+        };
+
         notes += `
           <div class='border-b border-dotted border-gray-600 pb-1 pt-4 px-2'>
-            <span class='font-bold'>${location.dateStart[j]} — ${location.dateEnd[j]}:</span> ${location.notes[j]}
+            <span class='font-bold'>${location.dateStart[j]} — ${location.dateEnd[j]}:</span> ${notesDescription}
             <br><br>
             ${participantString[j]}
             <br><br>
@@ -149,8 +173,8 @@ onMounted(() => {
   const specIcon = L.icon({
     iconUrl: '/images/marker.png',
     iconSize:     [20, 30], // size of the icon
-    iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location
-    popupAnchor:  [-10, -20] // point from which the popup should open relative to the iconAnchor
+    iconAnchor:   [2, 25], // point of the icon which will correspond to marker's location
+    popupAnchor:  [6, -30] // point from which the popup should open relative to the iconAnchor
   });
 
   L.Marker.mergeOptions({

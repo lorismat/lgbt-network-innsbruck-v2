@@ -309,18 +309,41 @@ watch(() => author.value, (newValue, oldValue) => {
               "job": meetings[i].job[j]
             })
 
+            let article = 'a';
+            let vowelTest = '^[aieouAIEOU].*';
+            if (participants[j].nationality.join('/').split('')[0].match(vowelTest)) {
+              article = 'an'
+            }
+
             participantString += `
-              ● ${participants[j].name} (${participants[j].dob} — ${participants[j].dod}) was a 
+              ● ${participants[j].name} (${participants[j].dob} — ${participants[j].dod}) was ${article} 
               ${participants[j].nationality.join('/')}, ${participants[j].sexuality}, ${participants[j].job.join(', ')}.
               <br>
             `
           }
 
+          let notes = '';
+          // title of books in italic
+          if (meetings[i].notes != 'undefined') {
+            notes = ": " + meetings[i].notes
+            notes = notes.split('_')
+            const notesFormatted = []
+            for (let i = 0; i<notes.length; i++) {
+              notesFormatted.push(notes[i])
+              if (i%2==0 && i<notes.length-1) {
+                notesFormatted.push('<i>')
+              } else if (i%2==1) {
+                notesFormatted.push('</i>')
+              }
+            }
+            notes = notesFormatted.join('');
+          };
+
           popupDescription.value += `
             <div class="pb-2 my-2 border-b border-dashed border-gray-500 text-sm">
               <div class="py-2">
                 <span class='font-sans font-bold'>${meetings[i].dateStart} — ${meetings[i].dateEnd}: </span>
-                <span class=''>${meetings[i].notes}</span>
+                <span class=''>${notes}</span>
               </div>
               <div><span class='font-sans font-bold'>Participants: </span>
                 ${participantString}

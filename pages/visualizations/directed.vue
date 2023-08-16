@@ -455,21 +455,44 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
                 "job": evs[i].job[j]
               })
 
+              let article = 'a';
+              let vowelTest = '^[aieouAIEOU].*';
+              if (participants[j].nationality.join('/').split('')[0].match(vowelTest)) {
+                article = 'an'
+              }
+
               participantString += `
-                ● ${participants[j].name} (${participants[j].dob} — ${participants[j].dod}) was a 
+                ● ${participants[j].name} (${participants[j].dob} — ${participants[j].dod}) was ${article} 
                 ${participants[j].nationality.join('/')}, ${participants[j].sexuality}, ${participants[j].job.join(', ')}.
                 <br>
               `
             }
 
             participantString += '<br>'
+
+            let notesDescription = '';
+            // title of books in italic
+            if (evs[i].notes != 'undefined') {
+              notesDescription = ": " + evs[i].notes
+              notesDescription = notesDescription.split('_')
+              const notesFormatted = []
+              for (let i = 0; i<notesDescription.length; i++) {
+                notesFormatted.push(notesDescription[i])
+                if (i%2==0 && i<notesDescription.length-1) {
+                  notesFormatted.push('<i>')
+                } else if (i%2==1) {
+                  notesFormatted.push('</i>')
+                }
+              }
+              notesDescription = notesFormatted.join('');
+            };
             
             popupDescription.value += `
               <div class="pb-2 my-2 border-b border-dashed border-gray-500 text-sm">
                 <span class='underline'>${matExchangeType}</span>
                 <div class="py-2">
                   <span class='font-sans font-bold'>${evs[i].dateStart} — ${evs[i].dateEnd}: </span>
-                  <span class=''>${evs[i].notes}</span>
+                  <span class=''>${notesDescription}</span>
                 </div>
                 <div><span class='font-sans font-bold'>Participants: </span>
                   ${participantString}

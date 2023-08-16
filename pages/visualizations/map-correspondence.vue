@@ -110,15 +110,44 @@ function generateMarker(dataset, L, map, target) {
         } else {
           page = 'p. ' + page
         }
+
+        let articleAgent = 'a';
+        let articleRecipient = 'a';
+
+        let vowelTest = '^[aieouAIEOU].*';
+        if (agentInfo.nationality.split('')[0].match(vowelTest)) {
+          articleAgent = 'an'
+        }
+        if (recipientInfo.nationality.split('')[0].match(vowelTest)) {
+          articleRecipient = 'an'
+        }
+
+        let notesDescription = '';
+        // title of books in italic
+        if (location.notes[j] != 'undefined') {
+          notesDescription = ": " +location.notes[j]
+          notesDescription = notesDescription.split('_')
+          const notesFormatted = []
+          for (let i = 0; i<notesDescription.length; i++) {
+            notesFormatted.push(notesDescription[i])
+            if (i%2==0 && i<notesDescription.length-1) {
+              notesFormatted.push('<i>')
+            } else if (i%2==1) {
+              notesFormatted.push('</i>')
+            }
+          }
+          notesDescription = notesFormatted.join('');
+        };
+
         notes += `
           <div class='border-b border-dotted border-gray-600 pb-1 pt-4 px-2'>
-            <span class='font-bold'>${location.dateStart[j]} — ${location.dateEnd[j]}:</span> ${location.notes[j]}
+            <span class='font-bold'>${location.dateStart[j]} — ${location.dateEnd[j]}:</span> ${notesDescription}
             <br><br>
             <span class='font-bold'>Agent:</span> ${agentName} (${agentInfo.dob} — ${agentInfo.dod}) 
-            was a ${agentInfo.nationality}, ${agentInfo.orientation}, ${agentInfo.occupation.join(', ')}
+            was ${articleAgent} ${agentInfo.nationality}, ${agentInfo.orientation}, ${agentInfo.occupation.join(', ')}
             <br>
             <span class='font-bold'>Recipient:</span> ${recipientName} (${recipientInfo.dob} — ${recipientInfo.dod}) 
-            was a ${recipientInfo.nationality}, ${recipientInfo.orientation}, ${recipientInfo.occupation.join(', ')}
+            was ${articleRecipient} ${recipientInfo.nationality}, ${recipientInfo.orientation}, ${recipientInfo.occupation.join(', ')}
             <br>
             <br><br>
             <span class='font-bold'>Source:</span> <span class='italic'>${location.source[j].split('_')[0].split('by')[0]}</span> by <span>${location.source[j].split('_')[0].split('by')[1]}</span>
