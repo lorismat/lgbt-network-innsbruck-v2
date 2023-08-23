@@ -237,7 +237,13 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
       if (selectedEvents.value.includes('Material Exchanges')) {
         datasets.push(directedMaterial.value)
       }
-      const data =  prepareDataset(datasets)
+      let data =  prepareDataset(datasets)
+      
+      data.links.sort((a, b) => {
+        if(a.value < b.value) { return -1; }
+        if(a.value > b.value) { return 1; }
+      })
+      
 
       // dynamic height 
       let height;
@@ -247,10 +253,10 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
       } else if (data.nodes.length < 8) {
         height = 500
       } else {
-        height = 700
+        height = 1000
       }
 
-      const width = 928;
+      const width = 1100;
 
       // svg cleaning
       d3.select("#directed").selectAll("*").remove();
@@ -288,6 +294,23 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
         if (selectedEvents.value.length > 1) {
 
           let linkColor = ['#d9d1b8','#401f13']
+
+          /*
+          link = svg.append("g")
+            .selectAll()
+            .data(links)
+            .join("line")
+              .attr("stroke", d => d.serie == 0 ? linkColor[0] : linkColor[1])
+              .attr("stroke-opacity", 0.8)
+              .attr("class", "paths cursor-pointer")
+              .attr("stroke-width", d => Math.max(1.5, Math.sqrt(d.value * 6)))
+              .on("click", click)
+              .on("mouseout", mouseout)
+              .on("mouseover", mouseover);
+              */
+
+
+              
           link = svg.append("g")
             .selectAll("path")
             .data(links)
@@ -301,6 +324,7 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
               .on("click", click)
               .on("mouseout", mouseout)
               .on("mouseover", mouseover);
+              
         } else {
 
           let linkColor = '#d9d1b8';
@@ -348,11 +372,13 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
         // Set the position attributes of links and nodes each time the simulation ticks.
         function ticked() {
           if (selectedEvents.value.length > 1) {
+          // if (selectedEvents.value.length > 1) {
+            // creating the arcs
             link
               .attr("d", function(d) {
                 const dx = d.target.x - d.source.x,
                     dy = d.target.y - d.source.y,
-                    dr = Math.sqrt(dx * dx + dy * dy);
+                    dr = Math.sqrt(dx * dx * 2.9 + dy * dy * 2.9);
                 return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
               })
           } else {
@@ -393,19 +419,15 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
           const city = el.target.name
           const evs = el.meetings
 
-          console.log(evs, evs[0])
-
-
           // sort material exchange by type in alphabetical order
           
+          
           if (evs[0].type != undefined) {
-            console.log('sorting')
             evs.sort((a, b) => {
               if(a.type < b.type) { return -1; }
               if(a.type > b.type) { return 1; }
             })
           }
-          
 
           let evenement = ''
           if (el.serie == 0 && selectedEvents.value[0] == 'Meetings') {
@@ -428,6 +450,8 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
 
           for ( let i=0 ; i<evs.length; i++) {
 
+            console.log("evs", evs[i])
+
 
             let page = evs[i].page;
             if (page.includes('-')) {
@@ -437,7 +461,7 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
             }
 
             let matExchangeType = '';
-            if (selectedEvents.value[0] !== 'Meetings') {
+            if (evs[i].type !== undefined) {
               matExchangeType += `
                 ${evs[i].type}<br>
               `
@@ -535,5 +559,9 @@ watch(() => [author.value, selectedEvents.value], (newValue, oldValue) => {
   stroke-linecap: butt;
   stroke-linejoin: miter;
   font-weight: 800;
+}
+
+#directed {
+  width:1100px !important;
 }
 </style>
