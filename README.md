@@ -46,3 +46,8 @@
 ## Warning
 
 - API calls limit to 100 are bypassed by recursive functions (up to 10)
+
+
+## Prod
+
+- static app

@@ -235,7 +235,10 @@ watch(() => [triggerMaterial.value], () => {
     })
 
     materials.forEach((material, index) => {
-      material['Document_new'] = material['Document'][0]
+      if (material.Document !== undefined) {
+        material['Document_new'] = material['Document'][0]
+      }
+      
       material['Agent_uniq'] = material['Agent'] != undefined ? material['Agent'][0] : ''
       material['Recipient_uniq'] = material['Recipient (if letter)'] != undefined ? material['Recipient (if letter)'][0] : ''
     })
@@ -490,8 +493,12 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
       }
     })
 
+    // * to fix for timeline/correspondence
     material.forEach((material, index) => {
-      material['docId'] = material['Document'][0]
+      //console.log(index, material['Document'][0], "---", material['Document']);
+      if (material.Document !== undefined) {
+        material['docId'] = material['Document'][0]
+      }
     })
 
     // getting all target names
