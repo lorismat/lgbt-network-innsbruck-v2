@@ -1,6 +1,6 @@
 # LGBT Network // Innsbruck
 
-[Link](https://lgbt-network-innsbruck.vercel.app/)s
+[Link](https://lgbt-network-innsbruck.vercel.app/)
 
 ## Stack
 
@@ -12,17 +12,44 @@
 - airtable sync with secured scope, limited to 100 calls []()
 - arquero 
 
+## Local setup
+
+- `Nuxt App`
+- tailwind
+- formkit
+```
+"dependencies": {
+  "@formkit/icons": "^0.17.2",
+  "@formkit/themes": "^0.17.2",
+  "arquero": "^5.2.0",
+  "axios": "^1.4.0",
+  "d3": "^7.8.5",
+  "d3-sankey": "^0.12.3",
+  "vis-timeline": "^7.7.2"
+},
+"devDependencies": {
+  "@formkit/nuxt": "^0.17.2",
+  "@nuxt/devtools": "latest",
+  "@nuxtjs/tailwindcss": "^6.7.0",
+  "@types/node": "^18",
+  "nuxt": "^3.5.2"
+```
+
+### Local Insttuctions
+
+`npm run dev -- -o` 
+
+### VS
+
+`Version 1.24.0` / `macos 10.15.7`
+
 ## Todo
 
-
 ## What I need
-
-- the access (to get the content, text, pictures)
 
 ## Warning
 
 - API calls limit to 100 are bypassed by recursive functions (up to 10)
-
 
 ## Prod
 
