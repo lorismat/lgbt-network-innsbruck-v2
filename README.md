@@ -42,7 +42,11 @@
 #### Process
 
 - `git checkout -b dev-branch`
-- ` 
+- `git add . && git -m "blabla"`
+- `git push -u origin dev-branch`
+- `git checkout dev-branch`
+- `gitb`
+
 
 
 
