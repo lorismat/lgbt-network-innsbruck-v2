@@ -35,9 +35,16 @@
   "nuxt": "^3.5.2"
 ```
 
-### Local Insttuctions
+### Local Instructions
 
-`npm run dev -- -o` 
+`npm run dev` 
+
+#### Process
+
+- `git checkout -b dev-branch`
+- ` 
+
+
 
 ### VS
 
