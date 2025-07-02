@@ -9,7 +9,7 @@
           Networks of Anglophone LGBTQ+ Exile Writers
         </div>
         <div class="py-2 text-lg text-center  text-gray-500">
-          From 1900 to 1969
+          From 1900 to 1969-
         </div>
       </div>
 

@@ -2,6 +2,14 @@
 
 [Link](https://lgbt-network-innsbruck.vercel.app/)
 
+## To-do
+
+- make sure about the workflow for dev-branch
+- read code again
+- clean code
+- try out new data
+- set up the road map
+
 ## Stack
 
 - d3
