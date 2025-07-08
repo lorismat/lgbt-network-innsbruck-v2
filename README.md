@@ -1,6 +1,6 @@
 # LGBT Network // v2.0
 
-[Link](https://lgbt-network-innsbruck.vercel.app/)
+[Link](https://lgbt-network-innsbruck-v2.vercel.app/)
 
 ## To-do
 
