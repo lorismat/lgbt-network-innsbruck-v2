@@ -1,4 +1,4 @@
-# LGBT Network // Innsbruck
+# LGBT Network // v2.0
 
 [Link](https://lgbt-network-innsbruck.vercel.app/)
 
