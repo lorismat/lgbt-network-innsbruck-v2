@@ -80,7 +80,6 @@ watch(() => [triggerLocations.value, triggerMeetings.value, triggerMaterial.valu
   // join with the People table to get participants info
   // join with locations to get the places info
   // group by meetings (array of participants)
-
   // format in a nodes/links pattern
 
   const meetings = dataMeetings.value.map(x => x.fields)
@@ -95,9 +94,28 @@ watch(() => [triggerLocations.value, triggerMeetings.value, triggerMaterial.valu
   people.forEach((people, i) => {
     people['participant_rec'] = dataPeople.value[i].id
   })
+
   docs.forEach((doc, i) => {
     doc['source'] = dataDocuments.value[i].id
   })
+
+
+  // DELETE
+  // material['participant_rec'] = 'rec6YcoywP54rTE0n'
+
+  /*
+  docs.forEach((docs, i) => {
+    console.log(docs)
+    if (docs['source'] ===  null) {
+      docs['source'] = 'reczrqYqM56FWPM8O'
+      console.log('FIXED')
+    }
+    else {
+      // console.log(docs['source'])
+    }
+  })
+  */
+
   meetings.forEach((meeting, index) => {
     if (meeting['Location'] != undefined) {
       meeting['createdLoc'] = meeting['Location'][0]
@@ -114,24 +132,41 @@ watch(() => [triggerLocations.value, triggerMeetings.value, triggerMaterial.valu
       if (material['Recipient (if letter)'] != undefined) {
         material['participant_rec'].push(material['Recipient (if letter)'][0])
       }
+      // ?? here ??
       material['source'] = material['Document'][0]
     }
+    // DELETE
+    else {
+      material['participant_rec'] = 'rec6YcoywP54rTE0n'
+      material['source'] = 'rec00p6d92A2E1dQ3'
+    }
+    
   })
 
-  // processed in the timeline call, changing material value
   const tMaterial = aq.from(material)
+  console.log(tMaterial._data)
   const tLocations = aq.from(locations)
   const tPeople = aq.from(people)
   const tDocs = aq.from(docs)
-  
   let tMeetingsUnroll = aq.from(meetings).unroll('participant_rec')
   let tMaterialUnroll = tMaterial.unroll('participant_rec')
+  console.log(tMaterialUnroll._data)
 
   const tMeetingsUnrollLocated = tMeetingsUnroll.join(tLocations, 'createdLoc')
   const tMeetingsUnrollLocatedParticipants = tMeetingsUnrollLocated.join(tPeople, 'participant_rec')
   let tMaterialUnrollParticipants = tMaterialUnroll.join(tPeople, 'participant_rec')
+
+  // problem: undefined Agent(s)
+  
+  console.log(tPeople._data)
+  console.log(tMaterialUnrollParticipants._data)
+  console.log(tDocs._data)
+
+  console.log('up to here v2.5')
+  // ?? here ??
   tMaterialUnrollParticipants = tMaterialUnrollParticipants.join_left(tDocs, ['source', 'source'], [aq.all(), ['ID']], { 'suffix': ['_source', '_source_2'] })
 
+  console.log('up to here v2.6')
   // ID_1 is the meeting ID
   const groupedMeetingsAll = tMeetingsUnrollLocatedParticipants.groupby('ID_1').rollup({
       city: aq.op.max('Name'),
@@ -147,6 +182,8 @@ watch(() => [triggerLocations.value, triggerMeetings.value, triggerMaterial.valu
       dateEnd: aq.op.max('End date'),
       notes: aq.op.max('Summary'),
     }).objects();
+
+  // console.log('up to here v2.7')
 
   const groupedMaterialAll = tMaterialUnrollParticipants.groupby('Material Exchange ID').rollup({
     //city: '',
@@ -439,6 +476,7 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     // each table should have the same colums
     const meetings = dataMeetings.value.map(x => x.fields)
     let tMeetings = aq.from(meetings)
+    // console.log('up to here v3')
     let tMeetingsUnroll = aq.from(meetings).unroll('Participants')
     
     // material: create a column for people
@@ -494,7 +532,6 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
 
     // * to fix for timeline/correspondence
     material.forEach((material, index) => {
-      //console.log(index, material['Document'][0], "---", material['Document']);
       if (material.Document !== undefined) {
         material['docId'] = material['Document'][0]
       }

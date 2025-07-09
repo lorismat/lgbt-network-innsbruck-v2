@@ -24,7 +24,6 @@
 ## Local setup
 
 - `Nuxt App`
-- 
 - tailwind
 - formkit
 
@@ -59,3 +58,15 @@
 ## Prod
 
 - static app
+
+## Report
+
+- Errors on the Participant column
+```
+Material Exchanges  
+1565 no agent > I assume Thornton Wilder, The Selected Letters of Thornton Wilder
+Documents
+401 no author > I assume Sylvia Scarlett, The Early Life and Adventures of Sylvia Scarlett
+440 no author > I assume Gertrude Stein, Water Pipe
+473 no author > I assume Osbert Sitwell, Laughter in the next room
+```
