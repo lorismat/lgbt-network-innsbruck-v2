@@ -5,7 +5,6 @@
 <script setup>
 
 /* CHROME ft. ARQUERO BUG DESCRIPTION 
-
 In Chrome, data has to be sorted before any join so that the values are defined for column which have to 
 be present in the join 
 */

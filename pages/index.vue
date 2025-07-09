@@ -1,9 +1,6 @@
 <template>
   <div>
-
-    <!-- INTRO -->
     <div class="mb-24">
-      
       <div class="pt-16">
         <div class="py-2 text-5xl max-w-2xl text-center mx-auto text-gray-800">
           Networks of Anglophone LGBTQ+ Exile Writers
@@ -60,29 +57,29 @@ const cards = [
   {
     "title": "Timeline of Author Meetings and Material Exchanges",
     "description": "This timeline shows meetings and creative exchanges between LGBTQ+ exile writers organized according to date.",
-    "image": "images/graphs/2.png",
-    "url": "/visualizations/timeline", 
+    "image": "images/graphs/placeholder.png",
+    // "url": "/visualizations/timeline", 
     "colSpan": "col-span-2"
   },
   {
     "title": "Map of Author Meetings",
     "description": "This map plots meetings between LGBTQ+ exile writers across the globe.",
-    "image": "images/graphs/3.png",
-    "url": "/visualizations/map-meetings", 
+    "image": "images/graphs/placeholder.png",
+    // "url": "/visualizations/map-meetings", 
     "colSpan": "col-span-2"
   },
   {
     "title": "Map of Correspondence Between Authors",
     "description": "This map plots places where letters were exchanged between LGBTQ+ exile writers across the globe.",
-    "image": "images/graphs/4.png",
-    "url": "/visualizations/map-correspondence", 
+    "image": "images/graphs/placeholder.png",
+    // "url": "/visualizations/map-correspondence", 
     "colSpan": "col-start-2 col-end-4"
   },
   {
     "title": "Force-Directed Graph of Author Meetings and Material Exchanges",
     "description": "This graph shows meetings and creative exchanges between LGBTQ+ exile writers organized according to the relative density of connections.",
-    "image": "images/graphs/5.png",
-    "url": "/visualizations/directed", 
+    "image": "images/graphs/placeholder.png",
+    // "url": "/visualizations/directed", 
     "colSpan": "col-start-4 col-end-6"
   }
 ]

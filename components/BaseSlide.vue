@@ -1,4 +1,5 @@
 <template>
+  <!-- For Further directions explanations -->
   <div :class="small ? 'my-1' : 'my-12'">
     <div class="text-left font-sans">
       {{ title }}

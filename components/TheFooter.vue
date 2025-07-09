@@ -9,7 +9,7 @@
         </ul>
       </div>
       <div>
-        <p class="text-gray-500 text-right p-1 text-sm">© 2023 Benjamin Robbins</p>
+        <p class="text-gray-500 text-right p-1 text-sm">© 2025 Benjamin Robbins</p>
       </div>
     </nav>
   </footer>

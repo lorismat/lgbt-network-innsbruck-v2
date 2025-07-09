@@ -1,4 +1,5 @@
 <template>
+  <!-- Description content below each viz -->
   <div>
     <div class="text-left text-xl pt-8 pb-2 text-gray-700">
       {{ title }}

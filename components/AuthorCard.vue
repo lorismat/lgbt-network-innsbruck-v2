@@ -1,4 +1,5 @@
 <template>
+  <!-- Card displayed after author is selected, for Sankey, Timeline, Force-directed -->
   <div v-if="authorInfo != ''" class="p-2 max-w-lg border border-l-4 border-gray-800">
     <div class="inline-flex items-baseline justify-between w-full">
       <div class="text-xl pr-2">

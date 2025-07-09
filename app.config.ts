@@ -10,8 +10,6 @@ export default defineAppConfig({
   atTableMaterial: 'tblUA8DBovGmRAToe',
   atTablePeople: 'tblwtC6Fi0KHV1VSd', 
   */
-
-  // https://airtable.com/app1xP1BgjRXJZavE/shrXbt3ieTvE4CDqc/tblB9VScNv2eV4IXb/viwWJc2mO6j0eMw2U
   
   atToken: 'patoMDV6Y1ymntxsd.3c22aec8fa99ee43d76cc769b50a9719eb31c52a74f4320deeb2ef0c4962e4c6', // Scope for read-only on Writers official
   atApp: 'app1xP1BgjRXJZavE', // 
@@ -20,6 +18,14 @@ export default defineAppConfig({
   atTableDocuments: 'tblkUDCb2FCXo8tGI',
   atTableMaterial: 'tbluuh4RTTkJ5ODKg',
   atTablePeople: 'tbl6nLxVNoo49fFef', 
+
+  // test
+  // https://api.airtable.com/v0/appjcvb4pKbLC86mK/tblo2rHoWPIS2oB5l?maxRecords=10
+  // link
+  // https://airtable.com/appjcvb4pKbLC86mK/tblo2rHoWPIS2oB5l/viw50OXUksXb8asww
+  // token
+  // patMr9z5nGy8JJoR4.9c0094373106ee03aacfc05f475e9b1de5665059fba83f51916ef3be9fc65c13
+
 
   map: {
     center: [ 46.2276, 2.2137 ],

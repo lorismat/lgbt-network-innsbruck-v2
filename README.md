@@ -4,11 +4,11 @@
 
 ## To-do
 
-- make sure about the workflow for dev-branch
-- read code again
-- clean code
+- ~~make sure about the workflow for dev-branch/share new link~~
+- get into `Data.vue` file
 - try out new data
-- set up the road map
+- set up the road map for further directions
+- work on the first chart
 
 ## Stack
 
@@ -19,29 +19,14 @@
 - a timeline lib ([vis-timeline](https://github.com/visjs/vis-timeline) and [its standalone build](https://visjs.github.io/vis-timeline/examples/timeline/standalone-build.html))
 - airtable sync with secured scope, limited to 100 calls []()
 - arquero 
+- axios
 
 ## Local setup
 
 - `Nuxt App`
+- 
 - tailwind
 - formkit
-```
-"dependencies": {
-  "@formkit/icons": "^0.17.2",
-  "@formkit/themes": "^0.17.2",
-  "arquero": "^5.2.0",
-  "axios": "^1.4.0",
-  "d3": "^7.8.5",
-  "d3-sankey": "^0.12.3",
-  "vis-timeline": "^7.7.2"
-},
-"devDependencies": {
-  "@formkit/nuxt": "^0.17.2",
-  "@nuxt/devtools": "latest",
-  "@nuxtjs/tailwindcss": "^6.7.0",
-  "@types/node": "^18",
-  "nuxt": "^3.5.2"
-```
 
 ### Local Instructions
 
@@ -55,14 +40,15 @@
 - `git checkout dev-branch`
 - `gitb`
 
-
-
-
 ### VS
 
 `Version 1.24.0` / `macos 10.15.7`
 
 ## Todo
+
+## Airtable
+
+- `app.config.ts`
 
 ## What I need
 

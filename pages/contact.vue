@@ -6,7 +6,7 @@
       Benjamin Robbins
       <br>Institut für Amerikastudien | Universität Innsbruck
       <br>Address: Universität Innsbruck | Innrain 52 | 6020 Innsbruck
-      <br>All Content © Benjamin Robbins 2023
+      <br>All Content © Benjamin Robbins 2025
     </div>
 
     <div class="py-20 my-64"></div>
