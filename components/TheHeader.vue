@@ -5,7 +5,7 @@
         <NuxtLink :class="classBase" activeClass="text-gray-900" to="/">Home</NuxtLink>
       </div>
       <ul class="flex gap-12">
-        <li><NuxtLink :class="classAlt" to="/visualizations/sankey">Visualizations</NuxtLink></li>
+        <li><NuxtLink :class="classAlt" to="/visualizations/scope-network">Visualizations</NuxtLink></li>
         <li><NuxtLink :class="classBase" to="/enhancement">Future Directions</NuxtLink></li>
         <li><NuxtLink :class="classBase" :activeClass="classActive" to="/about">About</NuxtLink></li>
         <li><NuxtLink :class="classBase" :activeClass="classActive" to="/contact">Contact</NuxtLink></li>

@@ -1,5 +1,8 @@
 <template>
   <HeaderViz />
+  <SectionSubtitle 
+    text="In this section, you can visualize the LGBTQ+ network by author."
+  />
   <Tooltip 
     :description="popupDescription"
     :title="popupTitle"

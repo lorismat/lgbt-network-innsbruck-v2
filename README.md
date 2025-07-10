@@ -39,6 +39,12 @@
 - `git checkout dev-branch`
 - `gitb`
 
+Post PR
+- `git checkout main`
+- `git pull origin main` 
+- `git checkout dev-branch` 
+
+
 ### VS
 
 `Version 1.24.0` / `macos 10.15.7`
