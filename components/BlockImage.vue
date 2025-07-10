@@ -1,6 +1,6 @@
 <template>
   <!-- IMAGE -->
-  <div class="mx-auto py-12">
+  <div class="mx-auto py-12 max-w-4xl">
     <img src="/images/tomb.png" alt="Oscar Wilde's tomb in Paris" />
     <div class="text-gray-500 text-right text-sm">
       An inscription on the tomb of Oscar Wilde in Père Lachaise Cemetery, Paris taken from the epitaph of 

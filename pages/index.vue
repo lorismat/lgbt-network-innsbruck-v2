@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-6 gap-4 pb-4">
+    <div class="grid grid-cols-6 gap-10 pb-4">
       <div v-for="card in cards" :class="card.colSpan">
         <BaseCard 
           :title="card.title"
@@ -48,39 +48,25 @@ onMounted(() => {
 
 const cards = [
   {
-    "title": "Sankey Diagram for Author Meetings",
-    "description": "This diagram shows meetings between LGBTQ+ exile writers organized according to location.",
+    "title": "Visualizing the Scope of the Network",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi.",
+    "image": "images/graphs/placeholder.png",
+    "url": "/visualizations/scope-network", 
+    "colSpan": "col-span-2"
+  },
+  {
+    "title": "Visualizing by Authors",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi.",
     "image": "images/graphs/1.png",
     "url": "/visualizations/sankey", 
     "colSpan": "col-span-2"
   },
   {
-    "title": "Timeline of Author Meetings and Material Exchanges",
-    "description": "This timeline shows meetings and creative exchanges between LGBTQ+ exile writers organized according to date.",
-    "image": "images/graphs/placeholder.png",
-    // "url": "/visualizations/timeline", 
-    "colSpan": "col-span-2"
-  },
-  {
-    "title": "Map of Author Meetings",
-    "description": "This map plots meetings between LGBTQ+ exile writers across the globe.",
+    "title": "Visualizing by Locations",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus posuere nisl sit amet accumsan finibus. Suspendisse ullamcorper, turpis a sollicitudin venenatis, turpis lacus aliquam turpis, a feugiat risus ipsum euismod mi.",
     "image": "images/graphs/placeholder.png",
     // "url": "/visualizations/map-meetings", 
     "colSpan": "col-span-2"
-  },
-  {
-    "title": "Map of Correspondence Between Authors",
-    "description": "This map plots places where letters were exchanged between LGBTQ+ exile writers across the globe.",
-    "image": "images/graphs/placeholder.png",
-    // "url": "/visualizations/map-correspondence", 
-    "colSpan": "col-start-2 col-end-4"
-  },
-  {
-    "title": "Force-Directed Graph of Author Meetings and Material Exchanges",
-    "description": "This graph shows meetings and creative exchanges between LGBTQ+ exile writers organized according to the relative density of connections.",
-    "image": "images/graphs/placeholder.png",
-    // "url": "/visualizations/directed", 
-    "colSpan": "col-start-4 col-end-6"
   }
 ]
 
