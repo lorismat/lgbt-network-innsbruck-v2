@@ -104,6 +104,7 @@ watch(() => author.value, (newValue, oldValue) => {
     nodesArray = [...new Map(nodesArray.map(v => [JSON.stringify([v.name,v.category]), v])).values()]
 
     let linksArray = []
+    console.log("filteredMeetings",filteredMeetings)
     filteredMeetings.forEach((e, idx) => {
       for (let i = 0; i<e.participants.length;i++) {
 
@@ -111,7 +112,8 @@ watch(() => author.value, (newValue, oldValue) => {
 
           if (linksArray.filter(it => it.source === e.participants[i] && it.target === e.city).length > 0) {
             linksArray.filter(it => it.source === e.participants[i] && it.target === e.city)[0].value += 1;
-            linksArray.filter(it => it.source === e.participants[i] && it.target === e.city)[0].meetings.push({
+            // ?? here ??
+            linksArray.filter(it => console.log(it) || it.source === e.participants[i] && it.target === e.city)[0].meetings.push({
               "dateStart": e.dateStart,
               "dateEnd": e.dateEnd,
               "notes": e.notes,
@@ -133,6 +135,7 @@ watch(() => author.value, (newValue, oldValue) => {
                 "dateStart": e.dateStart,
                 "dateEnd": e.dateEnd,
                 "notes": e.notes,
+                // ?? here ??
                 "source": e.source,
                 "page": e.page,
                 "participants": e.participants,
@@ -352,12 +355,14 @@ watch(() => author.value, (newValue, oldValue) => {
               <div>
                 <br>
                 <span class='font-sans font-bold'>Source: </span>
-                <span class='italic'>${meetings[i].source.split('_')[0].split('by')[0]}</span> by <span>${meetings[i].source.split('_')[0].split('by')[1]}</span>
+                ${meetings[i].source}
                 (${page})
               </div>
             </div>
           `
         }
+
+        // <span class='italic'>${meetings[i].source.split('_')[0].split('by')[0]}</span> by <span>${meetings[i].source.split('_')[0].split('by')[1]}</span>
 
         popupVisible.value = true
       }

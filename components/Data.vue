@@ -99,23 +99,6 @@ watch(() => [triggerLocations.value, triggerMeetings.value, triggerMaterial.valu
     doc['source'] = dataDocuments.value[i].id
   })
 
-
-  // DELETE
-  // material['participant_rec'] = 'rec6YcoywP54rTE0n'
-
-  /*
-  docs.forEach((docs, i) => {
-    console.log(docs)
-    if (docs['source'] ===  null) {
-      docs['source'] = 'reczrqYqM56FWPM8O'
-      console.log('FIXED')
-    }
-    else {
-      // console.log(docs['source'])
-    }
-  })
-  */
-
   meetings.forEach((meeting, index) => {
     if (meeting['Location'] != undefined) {
       meeting['createdLoc'] = meeting['Location'][0]
@@ -124,52 +107,35 @@ watch(() => [triggerLocations.value, triggerMeetings.value, triggerMaterial.valu
   })
 
   material.forEach((material, i) => {
-    if (material['Agent'] != undefined) {
-      material['participant_rec'] = [material['Agent'][0]]
+    if (material['Agent(s)'] != undefined) {
+      material['participant_rec'] = [material['Agent(s)'][0]]
       if (material['People (if allusion)'] != undefined) {
         material['participant_rec'].push(material['People (if allusion)'][0])
       }
       if (material['Recipient (if letter)'] != undefined) {
         material['participant_rec'].push(material['Recipient (if letter)'][0])
       }
-      // ?? here ??
       material['source'] = material['Document'][0]
     }
-    // DELETE
-    else {
-      material['participant_rec'] = 'rec6YcoywP54rTE0n'
-      material['source'] = 'rec00p6d92A2E1dQ3'
-    }
-    
   })
 
   const tMaterial = aq.from(material)
-  console.log(tMaterial._data)
   const tLocations = aq.from(locations)
   const tPeople = aq.from(people)
   const tDocs = aq.from(docs)
   let tMeetingsUnroll = aq.from(meetings).unroll('participant_rec')
   let tMaterialUnroll = tMaterial.unroll('participant_rec')
-  console.log(tMaterialUnroll._data)
 
   const tMeetingsUnrollLocated = tMeetingsUnroll.join(tLocations, 'createdLoc')
   const tMeetingsUnrollLocatedParticipants = tMeetingsUnrollLocated.join(tPeople, 'participant_rec')
   let tMaterialUnrollParticipants = tMaterialUnroll.join(tPeople, 'participant_rec')
 
-  // problem: undefined Agent(s)
-  
-  console.log(tPeople._data)
-  console.log(tMaterialUnrollParticipants._data)
-  console.log(tDocs._data)
-
-  console.log('up to here v2.5')
-  // ?? here ??
   tMaterialUnrollParticipants = tMaterialUnrollParticipants.join_left(tDocs, ['source', 'source'], [aq.all(), ['ID']], { 'suffix': ['_source', '_source_2'] })
 
-  console.log('up to here v2.6')
   // ID_1 is the meeting ID
   const groupedMeetingsAll = tMeetingsUnrollLocatedParticipants.groupby('ID_1').rollup({
       city: aq.op.max('Name'),
+      // ?? here ?? 
       source: aq.op.max('Document (evidence of meeting)'),
       page: aq.op.max('Page number'),
       participants: aq.op.array_agg('ID'),
@@ -183,10 +149,7 @@ watch(() => [triggerLocations.value, triggerMeetings.value, triggerMaterial.valu
       notes: aq.op.max('Summary'),
     }).objects();
 
-  // console.log('up to here v2.7')
-
   const groupedMaterialAll = tMaterialUnrollParticipants.groupby('Material Exchange ID').rollup({
-    //city: '',
     source: aq.op.max('ID_source_2'),
     page: aq.op.max('Page number'),
     participants: aq.op.array_agg('ID_source'),
@@ -275,7 +238,7 @@ watch(() => [triggerMaterial.value], () => {
         material['Document_new'] = material['Document'][0]
       }
       
-      material['Agent_uniq'] = material['Agent'] != undefined ? material['Agent'][0] : ''
+      material['Agent_uniq'] = material['Agent(s)'] != undefined ? material['Agent(s)'][0] : ''
       material['Recipient_uniq'] = material['Recipient (if letter)'] != undefined ? material['Recipient (if letter)'][0] : ''
     })
 
@@ -285,7 +248,8 @@ watch(() => [triggerMaterial.value], () => {
       } else {
         return -1
       };
-    }).filter(d => d['Type'] == 'Letter')
+    // testing and replacing Letter by Letter, telegram or postcard
+    }).filter(d => d['Type'] == 'Letter, telegram, or postcard')
 
     const tLocations = aq.from(locations)
     const tMaterial = aq.from(materials)
@@ -406,11 +370,7 @@ watch(() => [triggerMaterial.value], () => {
       lat: aq.op.mean('Latitude'),
       lon: aq.op.mean('Longitude')
     }).objects();
-    
-  }
-
-  // lettersDataset.value = tMaterial.objects().filter(x => x.Type == 'Letter')
-  
+  }  
 })
 
 // forTimeline: Meetings, Documents, Material
@@ -476,7 +436,6 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
     // each table should have the same colums
     const meetings = dataMeetings.value.map(x => x.fields)
     let tMeetings = aq.from(meetings)
-    // console.log('up to here v3')
     let tMeetingsUnroll = aq.from(meetings).unroll('Participants')
     
     // material: create a column for people
@@ -558,8 +517,8 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
       doc['Source_full'] = doc['ID']
     })
 
-    let tDocuments = aq.from(documents).unroll('Author or editor')
-    tDocuments = tDocuments.derive({ authorUnified: d => d['Author or editor'] })
+    let tDocuments = aq.from(documents).unroll('Author(s), editor(s), or director(s)')
+    tDocuments = tDocuments.derive({ authorUnified: d => d['Author(s), editor(s), or director(s)'] })
     
     // todo: join data to get reading documents
     tMaterial = tMaterial.join_left(tDocuments, ['reading', 'createdDocID'], [aq.all(), aq.all()], { 'suffix': ['_r', '_r2'] })
@@ -571,25 +530,19 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
       source: aq.op.max('Source_full_doc2'),
       page: aq.op.max('Page number'),
       participants: aq.op.array_agg('ID_1'),
-
       dob: aq.op.array_agg('Date of birth'),
       dod: aq.op.array_agg('Date of death'),
       nationality: aq.op.array_agg('Nationality'),
       sexuality: aq.op.array_agg('Sexual orientation'),
       job: aq.op.array_agg('Occupation'),
-
       dateStart: aq.op.max('Start date of activity'),
       dateEnd: aq.op.max('End date of activity'),
       notes: aq.op.max('Summary'),
-      agent: aq.op.max('Agent'),
+      agent: aq.op.max('Agent(s)'),
       document: aq.op.max('ID'),
     });
-
     tMaterial = tMaterial.derive({ authorUnified: d => d['agent'] }).objects();
-    
     materialDataset.value = tMaterial;
-
-    // source info is missing, join required
     tMeetings = tMeetings.derive({ authorUnified: d => d['Participants'] })
     tMeetingsUnroll = tMeetingsUnroll.derive({ authorUnified: d => d['Participants'] })
 
@@ -621,7 +574,7 @@ watch(() => [triggerMeetings.value, triggerDocuments.value, triggerMaterial.valu
       title: aq.op.max('Title'),
       pubYear: aq.op.max('Year of publication (original)'),
       notes: aq.op.max('Description'),
-      pub: aq.op.max('Publisher'),
+      pub: aq.op.max('Publisher or production company'),
     }).objects();
     
   }
